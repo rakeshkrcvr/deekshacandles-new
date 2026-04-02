@@ -1,6 +1,8 @@
 import DiscountManager from "./DiscountManager";
 import prisma from "@/lib/prisma";
 
+export const dynamic = 'force-dynamic';
+
 export default async function DiscountsPage() {
   const discounts = await prisma.coupon.findMany({
     orderBy: { createdAt: 'desc' }
