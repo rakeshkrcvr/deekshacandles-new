@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --font-sans: var(--font-poppins);
+  --font-serif: var(--font-poppins);
+  --font-mono: var(--font-poppins);
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
+  --font-weight-extrabold: 500;
+  --font-weight-black: 500;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-poppins) !important;
+}
+
+* {
+  font-family: var(--font-poppins) !important;
+  border-radius: 2px !important;
+}
+
+b, strong {
+  font-weight: 500 !important;
+}
+
+.outline-none {
+  color: #000000;
+}
+
+.lg\:text-5xl {
+  font-size: 30px;
+}
+
+
+@supports (color: color-mix(in lab, red, red)) {
+  .text-red-700\/90 {
+    color:
+      color-mix(in oklab, var(--color-red-700) 90%, transparent);
+    font-size: 12px;
+  }
+}
