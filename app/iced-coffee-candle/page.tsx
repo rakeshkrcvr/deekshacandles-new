@@ -242,7 +242,7 @@ export default function IcedCoffeeCandleLanding() {
               </div>
               <div>
                 <p className="font-bold text-sm text-stone-900">Tall Glass Jar</p>
-                <p className="text-xs text-stone-500">Dimensions: 3" x 2"</p>
+                <p className="text-xs text-stone-500">Dimensions: 3&quot; x 2&quot;</p>
               </div>
             </div>
             <div className="flex items-start gap-3 p-3 bg-white rounded-xl border border-stone-100 shadow-sm">
@@ -323,7 +323,7 @@ export default function IcedCoffeeCandleLanding() {
                 <div className="p-4 pt-0 text-stone-600 text-sm leading-relaxed border-t border-stone-100 flex flex-col gap-3">
                    <div className="flex gap-3">
                      <ShieldCheck className="w-6 h-6 text-emerald-600 shrink-0" />
-                     <p>We believe in our products 100%. If you aren't absolutely delighted with your purchase, contact us within 30 days for a stress-free resolution.</p>
+                     <p>We believe in our products 100%. If you aren&apos;t absolutely delighted with your purchase, contact us within 30 days for a stress-free resolution.</p>
                    </div>
                 </div>
               )}

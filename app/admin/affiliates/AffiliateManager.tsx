@@ -42,7 +42,7 @@ export default function AffiliateManager({ initialAffiliates }: { initialAffilia
 
   const filteredAffiliates = affiliates.filter(a => 
     a.name.toLowerCase().includes(search.toLowerCase()) || 
-    a.code.toLowerCase().includes(search.toLowerCase()) ||
+    (a.code || "").toLowerCase().includes(search.toLowerCase()) ||
     a.email.toLowerCase().includes(search.toLowerCase())
   );
 

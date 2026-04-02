@@ -341,7 +341,7 @@ function CheckoutContent() {
                         {paymentMethod === 'razorpay' && <div className="w-2.5 h-2.5 rounded-full bg-rose-600" />}
                       </div>
                       <input type="radio" name="payment" value="razorpay" className="hidden" checked={paymentMethod === 'razorpay'} onChange={() => setPaymentMethod('razorpay')} />
-                      <span className="font-medium text-gray-900">Razorpay Secure (UPI, Cards, Int'l Cards, Wallets)</span>
+                      <span className="font-medium text-gray-900">Razorpay Secure (UPI, Cards, Int&apos;l Cards, Wallets)</span>
                     </div>
                     <div className="flex gap-1.5">
                       <img src="/payment-icons/upi.svg" alt="UPI" className="h-4" />
@@ -355,7 +355,7 @@ function CheckoutContent() {
                       <div className="w-12 h-12 bg-rose-600/10 rounded-full flex items-center justify-center mb-3">
                          <svg className="w-6 h-6 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
                       </div>
-                      <p className="text-sm text-gray-600">You'll be redirected to Razorpay Secure to complete your purchase.</p>
+                      <p className="text-sm text-gray-600">You&apos;ll be redirected to Razorpay Secure to complete your purchase.</p>
                     </div>
                   )}
                 </label>

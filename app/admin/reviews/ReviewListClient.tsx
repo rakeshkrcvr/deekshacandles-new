@@ -4,7 +4,15 @@ import { useState } from "react";
 import { Star, Trash2, Edit2, ShoppingBag, User, Search, Filter } from "lucide-react";
 import { deleteReviewAction, updateReviewAction } from "./actions";
 
-export default function ReviewListClient({ initialReviews }: { initialReviews: any[] }) {
+interface Review {
+  id: string;
+  rating: number;
+  comment: string;
+  user: { name: string } | null;
+  product: { title: string, imageUrls?: string[], image?: string } | null;
+}
+
+export default function ReviewListClient({ initialReviews }: { initialReviews: Review[] }) {
   const [reviews, setReviews] = useState(initialReviews);
   const [search, setSearch] = useState("");
   const [filterRating, setFilterRating] = useState<number | 'all'>('all');
@@ -134,11 +142,11 @@ export default function ReviewListClient({ initialReviews }: { initialReviews: a
                   rows={2}
                  />
                ) : (
-                 <div className="bg-gray-50/30 p-2 rounded-[10px]">
-                    <p className="text-[10px] font-bold text-gray-600 leading-tight italic truncate max-w-2xl">
-                      "{review.comment}"
-                    </p>
-                 </div>
+                  <div className="bg-gray-50/30 p-2 rounded-[10px]">
+                     <p className="text-[10px] font-bold text-gray-600 leading-tight italic truncate max-w-2xl">
+                       &quot;{review.comment}&quot;
+                     </p>
+                  </div>
                )}
             </div>
 

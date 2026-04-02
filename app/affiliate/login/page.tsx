@@ -93,7 +93,7 @@ export default function AffiliateLoginPage() {
 
             <div className="pt-6 text-center border-t border-gray-50">
               <p className="text-xs text-gray-400 font-medium italic">
-                Don't have an affiliate account?{" "}
+                Don&apos;t have an affiliate account?{" "}
                 <Link href="/affiliate/apply" className="text-amber-600 font-bold hover:underline not-italic">Apply Here</Link>
               </p>
             </div>

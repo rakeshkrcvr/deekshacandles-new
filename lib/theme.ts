@@ -5,7 +5,7 @@ export async function getThemeSettings() {
   try {
     const raw = await fs.readFile(path.join(process.cwd(), 'data', 'themeSettings.json'), 'utf8');
     return JSON.parse(raw);
-  } catch (err) {
+  } catch {
     return {
       navbar: [],
       footer: { shop: [], company: [], legal: [] },
