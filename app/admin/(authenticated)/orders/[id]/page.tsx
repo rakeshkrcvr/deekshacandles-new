@@ -20,7 +20,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateOrderStatus } from "../../actions";
+import { updateOrderStatus } from "../../../actions";
 import CustomerDetailsEditor from "./CustomerDetailsEditor";
 
 export default async function OrderDetailsPage({ params }: { params: Promise<{ id: string }> }) {

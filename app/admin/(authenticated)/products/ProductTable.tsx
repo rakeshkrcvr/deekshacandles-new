@@ -7,7 +7,7 @@ import {
   ChevronDown, Filter, Download, MoreHorizontal, AlertTriangle,
   Trash, ArrowUpDown, ExternalLink
 } from "lucide-react";
-import { deleteProduct } from "../actions";
+import { deleteProduct } from "@/app/admin/actions";
 import { updateProductsBatch, deleteProductsBatch } from "./importActions";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -33,7 +33,7 @@ export default function ProductTable({
   initialProducts, 
   categories 
 }: { 
-  initialProducts: any[], 
+  initialProducts: Product[], 
   categories: Category[] 
 }) {
   const [isBulkEditing, setIsBulkEditing] = useState(false);
@@ -62,7 +62,7 @@ export default function ProductTable({
     const headers = ["Name", "Categories", "Price", "Stock"];
     const rows = filteredProducts.map(p => [
       p.title,
-      p.categories?.map((c: any) => c.name).join("; ") || "Uncategorized",
+      p.categories?.map((c: Category) => c.name).join("; ") || "Uncategorized",
       p.price.toString(),
       p.stock.toString()
     ]);
@@ -79,7 +79,7 @@ export default function ProductTable({
   };
 
   // --- Bulk Edit Actions ---
-  const handleEditChange = (id: string, field: string, value: any) => {
+  const handleEditChange = (id: string, field: string, value: number | string[]) => {
     setEditedProducts(prev => ({
       ...prev,
       [id]: {
@@ -253,7 +253,7 @@ export default function ProductTable({
               {filteredProducts.length > 0 ? (
                 filteredProducts.map((p) => {
                   const isSelected = selectedIds.includes(p.id);
-                  const currentCategoryIds = editedProducts[p.id]?.categoryIds ?? p.categories?.map((c: any) => c.id) ?? [];
+                  const currentCategoryIds = editedProducts[p.id]?.categoryIds ?? p.categories?.map((c: Category) => c.id) ?? [];
                   
                   return (
                     <tr key={p.id} className={`hover:bg-slate-50/80 transition-colors group ${isSelected ? 'bg-blue-50/30' : ''}`}>
@@ -292,7 +292,7 @@ export default function ProductTable({
                         ) : (
                           <div className="flex flex-wrap gap-1">
                             {p.categories && p.categories.length > 0 ? (
-                              p.categories.map((c: any) => (
+                              p.categories.map((c: Category) => (
                                 <span key={c.id} className="px-2.5 py-0.5 bg-gray-100 text-gray-600 rounded-lg text-[10px] font-bold uppercase tracking-tight">
                                   {c.name}
                                 </span>

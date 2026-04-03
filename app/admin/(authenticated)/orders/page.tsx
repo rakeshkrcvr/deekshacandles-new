@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { Package, CheckCircle, Clock, Trash2, ArrowRight, CreditCard, Truck, ExternalLink, MapPin } from "lucide-react";
-import { updateOrderStatus } from "../actions";
+import { updateOrderStatus } from "../../actions";
 import Link from "next/link";
 
 export default async function AdminOrdersPage() {

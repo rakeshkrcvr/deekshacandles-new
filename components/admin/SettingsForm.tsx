@@ -2,7 +2,7 @@
 
 import { Save, CreditCard, Truck, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
-import { updateStoreSettings } from "@/app/admin/settings/actions";
+import { updateStoreSettings } from "@/app/admin/(authenticated)/settings/actions";
 
 export default function SettingsForm({ settings }: { settings: any }) {
   const [razorpayKeyId, setRazorpayKeyId] = useState(settings?.razorpayKeyId || "");

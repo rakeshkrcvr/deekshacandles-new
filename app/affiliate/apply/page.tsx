@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { User, Mail, Phone, Youtube, Instagram, Send, CheckCircle2 } from "lucide-react";
-import { submitAffiliateApplication } from "@/app/admin/affiliates/actions";
+import { submitAffiliateApplication } from "@/app/admin/(authenticated)/affiliates/actions";
 import Link from "next/link";
 
 export default function AffiliateApplyPage() {

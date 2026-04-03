@@ -12,7 +12,7 @@ import {
   Loader2,
   Trash2
 } from "lucide-react";
-import { updateOrderCustomerDetails } from "../../actions";
+import { updateOrderCustomerDetails } from "../../../actions";
 
 interface CustomerDetailsEditorProps {
   order: any;
