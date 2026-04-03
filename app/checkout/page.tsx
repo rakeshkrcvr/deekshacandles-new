@@ -155,12 +155,24 @@ function CheckoutContent() {
       const cartData = items.map(i => ({ id: i.id, price: i.price, quantity: i.quantity, title: i.title }));
       const isCOD = paymentMethod === "cod";
       
+      const checkoutData = {
+        firstName: formData.get("firstName"),
+        lastName: formData.get("lastName"),
+        email: formData.get("email"),
+        phone: formData.get("phone"),
+        address: formData.get("address"),
+        apartment: formData.get("apartment"),
+        city: formData.get("city"),
+        state: formData.get("state"),
+        pincode: formData.get("pincode"),
+      };
+
       // Step 1: Initiate Razorpay or process COD
       const { orderId, keyId, isCashOnDelivery, error } = await initiateRazorpayOrder(totalAmount, isCOD);
 
       if (isCashOnDelivery || isCOD) {
         // Fallback or intentionally COD
-        const finalId = await verifyAndCompleteOrder(null, formData, cartData, affiliateId);
+        const finalId = await verifyAndCompleteOrder(null, checkoutData, cartData, affiliateId);
         if (finalId) {
           clearCart();
           router.push("/checkout/success");
@@ -191,7 +203,7 @@ function CheckoutContent() {
                  razorpay_order_id: response.razorpay_order_id,
                  razorpay_signature: response.razorpay_signature
                },
-               formData,
+               checkoutData,
                cartData,
                affiliateId
              );
@@ -222,9 +234,9 @@ function CheckoutContent() {
       });
       rzp.open();
 
-    } catch (error) {
-      console.error(error);
-      alert("Checkout failed. Please try again.");
+    } catch (error: any) {
+      console.error("TOTAL CHECKOUT ERROR:", error);
+      alert("Checkout failed: " + (error.message || "Please check all fields and try again."));
       setLoading(false);
     }
   };

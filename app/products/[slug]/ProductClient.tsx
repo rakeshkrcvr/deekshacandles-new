@@ -10,7 +10,12 @@ import AddToCartButton from "@/components/AddToCartButton";
 import ProductReviews from "./ProductReviews";
 import ProductCard from "@/components/ProductCard";
 
+import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/cart";
+
 export default function ProductClient({ product, relatedProducts = [] }: { product: any, relatedProducts?: any[] }) {
+  const router = useRouter();
+  const { addToCart } = useCartStore();
   const [mainImage, setMainImage] = useState(
     product.imageUrls?.[0] || 
     product.images?.[0]?.url || 
@@ -311,7 +316,19 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
             <span className="text-xs text-gray-500 font-medium">Total Price</span>
             <span className="text-xl font-bold text-gray-900">₹{finalPrice}</span>
          </div>
-         <button onClick={() => alert("Add to Cart Logic Hooked up inside store")} className="bg-gray-900 text-white px-8 py-3.5 rounded-full font-bold shadow-xl shadow-gray-900/20 active:scale-95 transition-all flex items-center gap-2">
+         <button 
+           onClick={() => {
+             addToCart({
+               id: product.id,
+               title: product.title,
+               price: finalPrice,
+               quantity: 1,
+               image: mainImage,
+             });
+             router.push("/checkout");
+           }} 
+           className="bg-gray-900 text-white px-8 py-3.5 rounded-full font-bold shadow-xl shadow-gray-900/20 active:scale-95 transition-all flex items-center gap-2"
+         >
             <ShoppingBag className="w-5 h-5" /> Buy Now
          </button>
       </div>

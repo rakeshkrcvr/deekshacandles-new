@@ -37,21 +37,13 @@ export async function initiateRazorpayOrder(amount: number, isCOD?: boolean) {
 
 export async function verifyAndCompleteOrder(
   paymentData: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string } | null,
-  formData: FormData, 
+  checkoutData: any, // Renamed from formData and changed type slightly for cleaner pass
   cartItems: {id: string, price: number, quantity: number, title: string}[],
   affiliateId?: string | null
 ) {
-  const firstName = formData.get("firstName") as string;
-  const lastName = formData.get("lastName") as string;
+  const { firstName, lastName, email, phone, address: baseAddress, apartment, city, state, pincode } = checkoutData;
   const name = firstName ? `${firstName} ${lastName}`.trim() : lastName;
-  const email = formData.get("email") as string;
-  const phone = formData.get("phone") as string;
-  const baseAddress = formData.get("address") as string;
-  const apartment = formData.get("apartment") as string;
   const address = apartment ? `${baseAddress}, ${apartment}` : baseAddress;
-  const city = formData.get("city") as string;
-  const state = formData.get("state") as string;
-  const pincode = formData.get("pincode") as string;
 
   if (!email || cartItems.length === 0) {
     throw new Error("Invalid checkout data.");
@@ -119,19 +111,22 @@ export async function verifyAndCompleteOrder(
     }
 
     // Mark Abandoned Checkout as Recovered
-    await tx.abandonedCheckout.updateMany({
-      where: { 
-        OR: [
-          { email },
-          { phone }
-        ],
-        recovered: false
-      },
-      data: {
-        recovered: true,
-        recoveredAt: new Date()
-      }
-    });
+    const orConditions = [];
+    if (email) orConditions.push({ email });
+    if (phone) orConditions.push({ phone });
+
+    if (orConditions.length > 0) {
+      await tx.abandonedCheckout.updateMany({
+        where: { 
+          OR: orConditions,
+          recovered: false
+        },
+        data: {
+          recovered: true,
+          recoveredAt: new Date()
+        }
+      });
+    }
 
     for (const item of cartItems) {
       await tx.product.update({
@@ -141,6 +136,8 @@ export async function verifyAndCompleteOrder(
     }
 
     return newOrder;
+  }, {
+    timeout: 15000 // 15 seconds timeout to avoid transaction not found on slower connections
   });
 
   if (settings?.shiprocketEmail && settings?.shiprocketPassword) {

@@ -64,4 +64,64 @@ export async function updateOrderStatus(id: string, status: string) {
     data: { status },
   });
   revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${id}`);
+}
+
+export async function updateOrderCustomerDetails(orderId: string, data: {
+  userName: string;
+  email: string;
+  fullName: string;
+  phone: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+}) {
+  const order = await prisma.order.findUnique({
+    where: { id: orderId },
+    include: { user: true, address: true }
+  });
+
+  if (!order) throw new Error("Order not found");
+
+  // Update User name (not email to avoid global impact, but user wants editable so let's see)
+  // Actually usually in e-commerce, order email is separate, but here it's linked to User model.
+  // I'll update the user tied to this order.
+  await prisma.user.update({
+    where: { id: order.userId },
+    data: { 
+      name: data.userName,
+      email: data.email
+    }
+  });
+
+  // Update Address
+  if (order.address) {
+    await prisma.address.update({
+      where: { orderId },
+      data: {
+        fullName: data.fullName,
+        phone: data.phone,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        pincode: data.pincode
+      }
+    });
+  } else {
+    await prisma.address.create({
+      data: {
+        orderId,
+        fullName: data.fullName,
+        phone: data.phone,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        pincode: data.pincode
+      }
+    });
+  }
+
+  revalidatePath("/admin/orders");
+  revalidatePath(`/admin/orders/${orderId}`);
 }
