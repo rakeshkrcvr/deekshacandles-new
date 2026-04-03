@@ -19,6 +19,7 @@ export default function SettingsForm({ settings }: { settings: Record<string, an
   const [shiprocketEmail, setShiprocketEmail] = useState(settings?.shiprocketEmail || "");
   const [shiprocketPassword, setShiprocketPassword] = useState(settings?.shiprocketPassword || "");
   const [isConnectingRazorpay, setIsConnectingRazorpay] = useState(false);
+  const [isConnectingShiprocket, setIsConnectingShiprocket] = useState(false);
 
   useEffect(() => {
     const handleExtensionMessage = (event: MessageEvent) => {
@@ -34,8 +35,14 @@ export default function SettingsForm({ settings }: { settings: Record<string, an
         setRazorpaySecret(data.razorpaySecret);
         setIsConnectingRazorpay(false);
       }
-      if (data.shiprocketEmail) setShiprocketEmail(data.shiprocketEmail);
-      if (data.shiprocketPassword) setShiprocketPassword(data.shiprocketPassword);
+      if (data.shiprocketEmail) {
+        setShiprocketEmail(data.shiprocketEmail);
+        setIsConnectingShiprocket(false);
+      }
+      if (data.shiprocketPassword) {
+        setShiprocketPassword(data.shiprocketPassword);
+        setIsConnectingShiprocket(false);
+      }
       
       alert(`Auto-filled credentials from ${data.source}! Please save the integration.`);
     };
@@ -76,6 +83,34 @@ export default function SettingsForm({ settings }: { settings: Record<string, an
          // Fake the completion if extension doesn't respond in 5s
          setTimeout(() => {
            if (isConnectingRazorpay) setIsConnectingRazorpay(false);
+         }, 5000);
+      }
+    }, 400);
+  };
+
+  const handleShiprocketGoogleConnect = () => {
+    setIsConnectingShiprocket(true);
+    
+    // Simulate natural OAuth flow visual delay
+    setTimeout(() => {
+      // Trigger extension auto-fetch for Shiprocket specifically if extension exists
+      window.postMessage({ type: "START_QUICK_SETUP", provider: "shiprocket" }, "*");
+      
+      // Open Shiprocket Google Auth popup (simulation)
+      const width = 500;
+      const height = 600;
+      const left = window.screenX + (window.outerWidth - width) / 2;
+      const top = window.screenY + (window.outerHeight - height) / 2;
+      const popup = window.open("https://auth.shiprocket.in/google", "ShiprocketAuth", `width=${width},height=${height},left=${left},top=${top}`);
+      
+      // If popup blocked or closed quickly, fallback
+      if (!popup) {
+         window.open("https://app.shiprocket.in/api-settings", "_blank");
+         setIsConnectingShiprocket(false);
+      } else {
+         // Fake the completion if extension doesn't respond in 5s
+         setTimeout(() => {
+           if (isConnectingShiprocket) setIsConnectingShiprocket(false);
          }, 5000);
       }
     }, 400);
@@ -139,10 +174,32 @@ export default function SettingsForm({ settings }: { settings: Record<string, an
       </div>
 
       {/* Shiprocket Section */}
-      <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-6">
-        <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 border-b border-gray-100 pb-4">
-          <Truck className="w-6 h-6 text-emerald-500" /> Shiprocket Integration
-        </h2>
+      <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-6 relative overflow-hidden">
+        {/* Background Decoration */}
+        <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-50 rounded-full blur-3xl opacity-50 pointer-events-none" />
+
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-6 relative z-10">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Truck className="w-6 h-6 text-emerald-500" /> Shiprocket Integration
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">Sync your orders and automate shipping globally.</p>
+          </div>
+          
+          <button
+            type="button"
+            onClick={handleShiprocketGoogleConnect}
+            disabled={isConnectingShiprocket}
+            className="flex items-center gap-3 px-5 py-2.5 bg-white border border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700 rounded-xl font-semibold text-sm transition-all shadow-sm active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed group whitespace-nowrap"
+          >
+            {isConnectingShiprocket ? (
+              <div className="w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <GoogleIcon />
+            )}
+            <span>{isConnectingShiprocket ? "Connecting..." : "Connect Automatically"}</span>
+          </button>
+        </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
            <div>
