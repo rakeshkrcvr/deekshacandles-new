@@ -97,17 +97,17 @@ export default function ProductCard({ product }: { product: Product }) {
       </div>
       
       {/* Title */}
-      <h3 className="text-[16px] md:text-[18px] font-serif font-bold text-slate-900 group-hover:text-[#e67300] transition-colors line-clamp-1 mb-1 leading-tight">
+      <h3 className="!text-[10px] md:!text-[11px] font-medium text-slate-900 group-hover:text-[#e67300] transition-colors line-clamp-1 mb-0.5 leading-tight" style={{ fontSize: '10px' }}>
         {product.title}
       </h3>
       
       {/* Price */}
-      <div className="flex items-end gap-2 mb-3">
-         <span className="text-xl font-bold text-slate-900 leading-none">
+      <div className="flex items-end gap-1 mb-2.5">
+         <span className="!text-[12px] md:!text-[13px] font-medium text-slate-900 leading-none" style={{ fontSize: '12px' }}>
            ₹{Math.round(finalPrice)}
          </span>
          {(product.discount ?? 0) > 0 && (
-           <span className="text-gray-400 line-through text-sm font-bold mb-[1px]">
+           <span className="text-gray-400 line-through !text-[8.5px] md:!text-[9.5px] font-medium mb-[0.2px]" style={{ fontSize: '8.5px' }}>
              ₹{Math.round(product.price)}
            </span>
          )}

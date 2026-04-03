@@ -113,7 +113,7 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
             </div>
           )}
           
-          <h1 className="text-xl lg:text-2xl font-serif text-gray-900 mb-2 leading-tight font-bold">
+          <h1 className="text-lg lg:text-xl font-serif text-gray-900 mb-2 leading-tight font-bold">
             {product.title}
           </h1>
           
@@ -155,11 +155,11 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
           </div>
 
           <div className="flex items-end gap-3 mb-5">
-            <span className="text-2xl lg:text-3xl font-black text-gray-900 tracking-tighter">
+            <span className="text-xl lg:text-2xl font-black text-gray-900 tracking-tighter">
               ₹{finalPrice}
             </span>
             {product.discount > 0 && (
-              <span className="text-base text-gray-400 line-through mb-0.5 font-light">
+              <span className="text-sm text-gray-400 line-through mb-0.5 font-light">
                 ₹{product.price}
               </span>
             )}
