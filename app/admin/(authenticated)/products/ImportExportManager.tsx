@@ -161,18 +161,18 @@ export default function ImportExportManager() {
 
   return (
     <>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2">
         <button 
           onClick={handleExport}
-          className="bg-white border text-gray-700 hover:bg-gray-50 border-gray-200 px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 shadow-sm transition-all"
+          className="h-8 px-3 text-[11px] bg-white border text-gray-700 hover:bg-gray-50 border-gray-200 rounded font-semibold flex items-center gap-1.5 shadow-sm transition-all"
         >
-          <Download className="w-5 h-5 text-gray-500" /> Export CSV
+          <Download className="w-3.5 h-3.5 text-gray-500" /> Export CSV
         </button>
         <button 
           onClick={() => { setIsImportModalOpen(true); setFile(null); setLogs([]); setProgress(0); }}
-          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-xl font-medium flex items-center gap-2 shadow-sm transition-all shadow-green-600/20"
+          className="h-8 px-3 text-[11px] bg-emerald-600 hover:bg-emerald-700 text-white rounded font-semibold flex items-center gap-1.5 shadow-sm transition-all shadow-emerald-600/10"
         >
-          <Upload className="w-5 h-5" /> Bulk Import
+          <Upload className="w-3.5 h-3.5" /> Import File
         </button>
       </div>
 
