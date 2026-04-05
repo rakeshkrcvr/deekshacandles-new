@@ -5,20 +5,34 @@ import CategoryManager from "./CategoryManager";
 
 export default async function AdminCategoriesPage() {
   const categories = await prisma.category.findMany({
+    include: { parent: true },
     orderBy: { createdAt: 'desc' }
   });
 
   async function handleCreate(formData: FormData) {
     "use server";
     const name = formData.get("name") as string;
-    let slug = formData.get("slug") as string;
+    const rawSlug = formData.get("slug") as string;
     const icon = formData.get("icon") as string;
+    const parentId = formData.get("parentId") as string;
     
-    slug = slug.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-    if (!name || !slug) return;
+    if (!name || !rawSlug) return;
+
+    let slug = rawSlug.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-');
+    
+    // Check if slug exists
+    const existing = await prisma.category.findUnique({ where: { slug } });
+    if (existing) {
+      slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
+    }
 
     await prisma.category.create({ 
-      data: { name, slug, icon: icon || null } 
+      data: { 
+        name, 
+        slug, 
+        icon: icon || null,
+        parentId: parentId || null 
+      } 
     });
     revalidatePath("/admin/categories");
   }
@@ -27,14 +41,34 @@ export default async function AdminCategoriesPage() {
     "use server";
     const id = formData.get("id") as string;
     const name = formData.get("name") as string;
-    const slug = formData.get("slug") as string;
+    const rawSlug = formData.get("slug") as string;
     const icon = formData.get("icon") as string;
+    const parentId = formData.get("parentId") as string;
 
-    if (!id || !name || !slug) return;
+    if (!id || !name || !rawSlug) return;
+
+    let slug = rawSlug.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-');
+
+    // Check if slug is taken by ANOTHER category
+    const existing = await prisma.category.findFirst({
+      where: { 
+        slug,
+        id: { not: id }
+      }
+    });
+
+    if (existing) {
+      slug = `${slug}-${Math.random().toString(36).substring(2, 5)}`;
+    }
 
     await prisma.category.update({
       where: { id },
-      data: { name, slug, icon: icon || null }
+      data: { 
+        name, 
+        slug, 
+        icon: icon || null,
+        parentId: (parentId && parentId !== id) ? parentId : null 
+      }
     });
     revalidatePath("/admin/categories");
   }

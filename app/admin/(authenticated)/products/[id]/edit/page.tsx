@@ -16,7 +16,7 @@ export default async function EditProductPage({ params }: { params: Promise<{ id
   }
 
   const [categories, allProducts] = await Promise.all([
-    prisma.category.findMany({ select: { id: true, name: true } }),
+    prisma.category.findMany({ select: { id: true, name: true, parent: true } }),
     prisma.product.findMany({
       where: { NOT: { id } },
       select: { id: true, title: true, imageUrls: true }

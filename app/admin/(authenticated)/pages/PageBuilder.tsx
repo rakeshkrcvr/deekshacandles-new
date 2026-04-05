@@ -193,7 +193,7 @@ export default function PageBuilder({
 
   const getInitialContent = (type: string) => {
     switch (type) {
-      case 'hero': return { items: [{ title: "New Drop", subtitle: "Hand-poured luxury", buttonText: "Shop Now", buttonUrl: "/products", image: "" }] };
+      case 'hero': return { items: [{ topText: "Handcrafted Luxury", title: "New Drop", subtitle: "Hand-poured luxury", buttonText: "Shop Now", buttonUrl: "/products", image: "" }] };
       case 'video-bg': return { url: "", title: "Cinematic Experience", loop: true, autoplay: true };
       case 'about': return { title: "Our Story", content: "Born from passion...", image: "", layout: 'left' };
       case 'image-with-text': return { title: "Craftsmanship", content: "Every detail matters...", image: "", layout: 'right' };

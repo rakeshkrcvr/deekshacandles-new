@@ -10,6 +10,8 @@ interface Category {
   name: string;
   slug: string;
   icon?: string | null;
+  parentId?: string | null;
+  parent?: Category | null;
 }
 
 export default function CategoryManager({ 
@@ -41,6 +43,7 @@ export default function CategoryManager({
         <CategoryForm 
           action={editingCategory ? updateAction : createAction} 
           initialData={editingCategory} 
+          categories={initialCategories}
           onClear={handleClear}
         />
       </div>

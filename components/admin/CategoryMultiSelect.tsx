@@ -84,6 +84,7 @@ const CategoryMultiSelect: React.FC<CategoryMultiSelectProps> = ({
           ) : null}
           {categories.map(c => {
             const isSelected = selectedIds.includes(c.id);
+            const parentName = (c as any).parent?.name;
             return (
               <div
                 key={c.id}
@@ -92,7 +93,14 @@ const CategoryMultiSelect: React.FC<CategoryMultiSelectProps> = ({
                   isSelected ? 'bg-blue-50/50 text-blue-700 font-bold' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
-                {c.name}
+                <div className="flex items-center gap-2">
+                  {parentName && (
+                    <span className="text-[9px] bg-gray-100 text-gray-400 px-1.5 py-0.5 rounded leading-none shrink-0 border border-gray-200/50">
+                      {parentName} →
+                    </span>
+                  )}
+                  <span>{c.name}</span>
+                </div>
                 {isSelected && <Check className="w-4 h-4 text-blue-500" strokeWidth={3} />}
               </div>
             );

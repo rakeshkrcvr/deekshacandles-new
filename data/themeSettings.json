@@ -55,6 +55,8 @@
     }
   ],
   "footer": {
+    "about": "Handcrafted with love and 100% pure organic soy & gel wax. Light up your special moments with our premium, eco-friendly scented candles.",
+    "address": "New Delhi, India",
     "shop": [
       {
         "id": "1",
@@ -156,5 +158,12 @@
     "phone": "+91-9971459984",
     "email": "deekshachauhancandles@gmail.com",
     "announcement": "✨ FREE SHIPPING ON PREPAID ORDERS | ORGANIC SOY WAX"
-  }
+  },
+  "social": {
+    "instagram": "@deekshacandles",
+    "facebook": "",
+    "twitter": ""
+  },
+  "logoText": "DEERA GLOW",
+  "logo": ""
 }

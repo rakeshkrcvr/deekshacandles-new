@@ -32,6 +32,11 @@ model Category {
   icon      String?
   createdAt DateTime @default(now())
 
+  // Subcategory fields
+  parentId      String?
+  parent        Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  subcategories Category[] @relation("SubCategories")
+
   products Product[]
 }
 

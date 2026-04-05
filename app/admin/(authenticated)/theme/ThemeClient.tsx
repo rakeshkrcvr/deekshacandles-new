@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { saveThemeSettings } from "./actions";
-import { Plus, Trash2, Save, Loader2, Link as LinkIcon, Phone, Mail, Megaphone, GripVertical } from "lucide-react";
+import { Plus, Trash2, Save, Loader2, Link as LinkIcon, Phone, Mail, Megaphone, GripVertical, UploadCloud, MapPin, Instagram, Facebook, Twitter } from "lucide-react";
 import { DndContext, closestCenter, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy, arrayMove, useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
@@ -243,28 +243,198 @@ export default function ThemeClient({ initialData, availablePages, availableCate
     );
   };
 
+  const ImageUploadField = ({ 
+    label, 
+    value, 
+    onChange 
+  }: { 
+    label: string, 
+    value: string, 
+    onChange: (val: string) => void 
+  }) => {
+    const [isUploading, setIsUploading] = useState(false);
+
+    const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        
+        const res = await fetch("/api/admin/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.error || "Upload failed on server.");
+        }
+
+        const data = await res.json();
+        
+        if (data.url) {
+          onChange(data.url);
+        } else {
+          throw new Error("No URL returned from server.");
+        }
+      } catch (err: any) {
+        console.error("Upload error:", err);
+        alert(`Upload failed: ${err.message || 'Unknown error'}`);
+      } finally {
+        setIsUploading(false);
+      }
+    };
+
+    return (
+      <div className="space-y-1.5 flex-1">
+        <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 px-0.5">
+           <Megaphone className="w-3 h-3 text-amber-500" /> {label}
+        </label>
+        <div className="flex gap-2">
+          <div className="relative flex-1">
+            <input 
+              className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm pr-10 shadow-sm focus:ring-2 focus:ring-amber-500 outline-none" 
+              value={value || ''} 
+              onChange={(e) => onChange(e.target.value)} 
+              placeholder="Logo URL..."
+            />
+            {value && (
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-lg overflow-hidden border border-gray-100 bg-white">
+                <img src={value} className="w-full h-full object-contain p-1" alt="prev" />
+              </div>
+            )}
+          </div>
+          <div className="relative group">
+            <input 
+              type="file" 
+              accept="image/*" 
+              onChange={handleUpload} 
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" 
+              disabled={isUploading}
+            />
+            <button className={`p-2.5 rounded-xl border border-gray-100 bg-white flex items-center justify-center transition-all shadow-sm ${isUploading ? 'opacity-50' : 'hover:bg-amber-50 hover:border-amber-200'}`}>
+              {isUploading ? <Loader2 className="w-5 h-5 animate-spin text-amber-600" /> : <UploadCloud className="w-5 h-5 text-gray-400 group-hover:text-amber-600" />}
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="space-y-6 relative pb-20 w-full max-w-5xl mx-auto">
       <div className="flex flex-col gap-6">
-        <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">Contact & Header Bar</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+           <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-bold text-gray-900 tracking-tight italic flex items-center gap-3">
+                 <Megaphone className="w-6 h-6 text-amber-500" /> Store Branding & Header
+              </h3>
+           </div>
+           
+           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 pb-8 border-b border-gray-50">
+              <ImageUploadField 
+                 label="Store Logo Image" 
+                 value={data.logo || ""} 
+                 onChange={(val) => setData({ ...data, logo: val })} 
+              />
+              <div>
+                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 px-0.5 mb-1.5">
+                    <LinkIcon className="w-3 h-3 text-amber-500" /> Store Name (Text Logo)
+                 </label>
+                 <input 
+                    type="text" 
+                    value={data.logoText || ""} 
+                    onChange={e => setData({ ...data, logoText: e.target.value })} 
+                    className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 font-bold placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm" 
+                    placeholder="DEEKSHA CANDLES" 
+                 />
+                 <p className="text-[9px] text-gray-400 mt-2 italic px-1">This text appears if no logo image is uploaded.</p>
+              </div>
+           </div>
+
+           <div className="grid grid-cols-1 md:grid-cols-1 gap-8 mb-10 pb-8 border-b border-gray-50">
+              <div>
+                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 px-0.5 mb-1.5">
+                    <Megaphone className="w-3 h-3 text-amber-500" /> Top Announcement Bar
+                 </label>
+                 <input type="text" value={data.contact?.announcement || ""} onChange={e => updateContact("announcement", e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm" placeholder="Free shipping on orders over ₹999!" />
+              </div>
+           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Phone className="w-3 h-3"/> Phone number</label>
-              <input type="text" value={data.contact?.phone || ""} onChange={e => updateContact("phone", e.target.value)} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="+91-9971459984" />
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Phone className="w-3 h-3"/> Support Phone number</label>
+              <input type="text" value={data.contact?.phone || ""} onChange={e => updateContact("phone", e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm" placeholder="+91-9971459984" />
             </div>
             <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Mail className="w-3 h-3"/> Support Email</label>
-              <input type="text" value={data.contact?.email || ""} onChange={e => updateContact("email", e.target.value)} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="support@deekshacandles.com" />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 flex items-center gap-1"><Megaphone className="w-3 h-3"/> Top Announcement Bar</label>
-              <input type="text" value={data.contact?.announcement || ""} onChange={e => updateContact("announcement", e.target.value)} className="w-full border border-gray-200 rounded-lg p-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500" placeholder="Free shipping on orders over ₹999!" />
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2 flex items-center gap-1"><Mail className="w-3 h-3"/> Support Email Address</label>
+              <input type="text" value={data.contact?.email || ""} onChange={e => updateContact("email", e.target.value)} className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm" placeholder="support@deekshacandles.com" />
             </div>
           </div>
         </div>
         
         {renderSection("Main Header Links", "navbar")}
+
+        <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm transition-all hover:shadow-md">
+           <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-bold text-gray-900 tracking-tight italic flex items-center gap-3">
+                 <LinkIcon className="w-6 h-6 text-amber-500" /> Footer Branding & Store Info
+              </h3>
+           </div>
+           
+           <div className="space-y-8">
+              <div>
+                 <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 px-0.5 mb-2">
+                    <Megaphone className="w-3 h-3 text-amber-500" /> Footer "About" Description
+                 </label>
+                 <textarea 
+                    value={data.footer?.about || ""} 
+                    onChange={e => setData({ ...data, footer: { ...data.footer, about: e.target.value } })} 
+                    className="w-full border border-gray-200 rounded-2xl px-6 py-4 text-sm text-gray-600 leading-relaxed placeholder:text-gray-400 bg-gray-50/30 outline-none focus:ring-2 focus:ring-amber-500 shadow-inner h-32 resize-none" 
+                    placeholder="Handcrafted with love and 100% pure organic soy & gel wax..."
+                 />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                 <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1.5 px-0.5 mb-2">
+                       <MapPin className="w-3 h-3 text-amber-500" /> Store Physical Address
+                    </label>
+                    <input 
+                       type="text" 
+                       value={data.footer?.address || ""} 
+                       onChange={e => setData({ ...data, footer: { ...data.footer, address: e.target.value } })} 
+                       className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder:text-gray-400 bg-white outline-none focus:ring-2 focus:ring-amber-500 shadow-sm" 
+                       placeholder="New Delhi, India" 
+                    />
+                 </div>
+                 <div className="grid grid-cols-3 gap-3">
+                    <div>
+                       <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1 mb-1.5">
+                          <Instagram className="w-3 h-3 text-pink-500" /> Instagram
+                       </label>
+                       <input type="text" value={data.social?.instagram || ""} onChange={e => setData({ ...data, social: { ...data.social, instagram: e.target.value } })} className="w-full border border-gray-100 rounded-lg p-2 text-[10px] bg-gray-50" placeholder="@handle" />
+                    </div>
+                    <div>
+                       <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1 mb-1.5">
+                          <Facebook className="w-3 h-3 text-blue-600" /> Facebook
+                       </label>
+                       <input type="text" value={data.social?.facebook || ""} onChange={e => setData({ ...data, social: { ...data.social, facebook: e.target.value } })} className="w-full border border-gray-100 rounded-lg p-2 text-[10px] bg-gray-50" placeholder="url..." />
+                    </div>
+                    <div>
+                       <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest flex items-center gap-1 mb-1.5">
+                          <Twitter className="w-3 h-3 text-sky-500" /> Twitter (X)
+                       </label>
+                       <input type="text" value={data.social?.twitter || ""} onChange={e => setData({ ...data, social: { ...data.social, twitter: e.target.value } })} className="w-full border border-gray-100 rounded-lg p-2 text-[10px] bg-gray-50" placeholder="url..." />
+                    </div>
+                 </div>
+              </div>
+           </div>
+        </div>
+        
         {renderSection("Footer - Shop Links", "shop")}
         {renderSection("Footer - Company Links", "company")}
         {renderSection("Footer - Legal Links", "legal")}

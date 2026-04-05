@@ -59,8 +59,18 @@ export default function Navbar({ theme }: { theme: any }) {
               >
                 <Menu className="w-6 h-6" />
               </button>
-              <Link href="/" className="text-xl md:text-2xl font-bold tracking-tighter text-gray-900 flex-shrink-0 uppercase">
-                DEEKSHA CANDLES
+              <Link href="/" className="flex-shrink-0">
+                {theme?.logo ? (
+                  <img 
+                    src={theme.logo} 
+                    alt="Logo" 
+                    className="h-10 md:h-12 w-auto object-contain" 
+                  />
+                ) : (
+                  <span className="text-xl md:text-2xl font-bold tracking-tighter text-gray-900 uppercase">
+                    {theme?.logoText || "DEEKSHA CANDLES"}
+                  </span>
+                )}
               </Link>
             </div>
 

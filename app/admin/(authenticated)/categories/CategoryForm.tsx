@@ -3,18 +3,27 @@
 import { useState, useEffect } from "react";
 import { Plus, UploadCloud, Loader2, Image as ImageIcon } from "lucide-react";
 
+interface Category {
+  id: string;
+  name: string;
+  parentId?: string | null;
+}
+
 export default function CategoryForm({ 
   action, 
   initialData, 
+  categories,
   onClear 
 }: { 
   action: (formData: FormData) => void, 
   initialData?: any, 
+  categories: Category[],
   onClear?: () => void 
 }) {
   const [name, setName] = useState(initialData?.name || "");
   const [slug, setSlug] = useState(initialData?.slug || "");
   const [icon, setIcon] = useState(initialData?.icon || "");
+  const [parentId, setParentId] = useState(initialData?.parentId || "");
   const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
@@ -22,10 +31,12 @@ export default function CategoryForm({
       setName(initialData.name);
       setSlug(initialData.slug);
       setIcon(initialData.icon || "");
+      setParentId(initialData.parentId || "");
     } else {
       setName("");
       setSlug("");
       setIcon("");
+      setParentId("");
     }
   }, [initialData]);
 
@@ -40,10 +51,8 @@ export default function CategoryForm({
   };
 
   useEffect(() => {
-    if (!initialData) {
-      setSlug(name.toLowerCase().trim().replace(/\s+/g, '-').replace(/[^\w-]+/g, '').replace(/--+/g, '-'));
-    }
-  }, [name, initialData]);
+    setSlug(slugify(name));
+  }, [name]);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -101,6 +110,27 @@ export default function CategoryForm({
           placeholder="soy-candles" 
         />
         <p className="text-[10px] text-gray-400 mt-2 px-1">Example: <span className="text-gray-600">/your-category-slug</span></p>
+      </div>
+
+      <div>
+        <label className="block text-sm text-gray-700 mb-2 font-medium">Parent Category (Optional)</label>
+        <select 
+          name="parentId" 
+          value={parentId}
+          onChange={(e) => setParentId(e.target.value)}
+          className="w-full border-gray-200 border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none text-sm transition-all bg-white"
+        >
+          <option value="">Main Category (None)</option>
+          {categories
+            .filter((c: Category) => c.id !== initialData?.id) // Prevent self-referencing
+            .map((category: Category) => (
+              <option key={category.id} value={category.id}>
+                {category.name}
+              </option>
+            ))
+          }
+        </select>
+        <p className="text-[10px] text-gray-400 mt-2 px-1 italic">Select a category if this is a subcategory.</p>
       </div>
 
       <div>

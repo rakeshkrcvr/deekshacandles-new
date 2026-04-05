@@ -9,6 +9,8 @@ interface Category {
   name: string;
   slug: string;
   icon?: string | null;
+  parentId?: string | null;
+  parent?: Category | null;
 }
 
 export default function CategoryList({ 
@@ -55,7 +57,14 @@ export default function CategoryList({
               </td>
               <td className="px-6 py-4 font-medium text-gray-900">
                 <div className="flex flex-col">
-                  <span className="font-bold">{c.name}</span>
+                  <div className="flex items-center gap-2">
+                    {c.parent && (
+                        <span className="text-[9px] bg-gray-100 text-gray-400 px-2 py-0.5 rounded uppercase font-black tracking-widest leading-none shrink-0 border border-gray-200/50">
+                            {c.parent.name} →
+                        </span>
+                    )}
+                    <span className="font-bold whitespace-nowrap">{c.name}</span>
+                  </div>
                   <span className="text-xs text-blue-500 font-mono mt-0.5">/{c.slug}</span>
                 </div>
               </td>

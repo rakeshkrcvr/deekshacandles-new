@@ -9,20 +9,36 @@ export default function Footer({ theme }: { theme?: any }) {
           
           <div className="lg:col-span-2">
             <Link href="/" className="text-xl font-bold text-gray-900 mb-4 block uppercase tracking-tighter">
-              DEEKSHA CANDLES
+              {theme?.logoText || "DEEKSHA CANDLES"}
             </Link>
             <p className="text-gray-600 text-[13px] leading-relaxed mb-6 max-w-sm">
-              Handcrafted with love and 100% pure organic soy & gel wax. Light up your special moments with our premium, eco-friendly scented candles.
+              {theme?.footer?.about || "Handcrafted with love and 100% pure organic soy & gel wax. Light up your special moments with our premium, eco-friendly scented candles."}
             </p>
             <div className="space-y-3 text-[13px] text-gray-600">
               {theme.contact?.phone && <p className="flex items-center gap-3"><Phone className="w-3.5 h-3.5 text-amber-700" /> {theme.contact.phone}</p>}
               {theme.contact?.email && <p className="flex items-center gap-3"><Mail className="w-3.5 h-3.5 text-amber-700" /> {theme.contact.email}</p>}
-              <p className="flex items-center gap-3"><MapPin className="w-3.5 h-3.5 text-amber-700" /> New Delhi, India</p>
+              {theme.footer?.address && (
+                <p className="flex items-center gap-3">
+                  <MapPin className="w-3.5 h-3.5 text-amber-700" /> {theme.footer.address}
+                </p>
+              )}
             </div>
             <div className="flex gap-4 mt-6">
-              <a href="#" className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-amber-700 hover:text-white transition-all shadow-sm"><Instagram className="w-3.5 h-3.5" /></a>
-              <a href="#" className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-amber-700 hover:text-white transition-all shadow-sm"><Facebook className="w-3.5 h-3.5" /></a>
-              <a href="#" className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-amber-700 hover:text-white transition-all shadow-sm"><Twitter className="w-3.5 h-3.5" /></a>
+              {theme.social?.instagram && (
+                <a href={theme.social.instagram.startsWith('http') ? theme.social.instagram : `https://instagram.com/${theme.social.instagram.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white border border-gray-300 flex items-center justify-center text-gray-600 hover:bg-amber-700 hover:text-white transition-all shadow-sm">
+                  <Instagram className="w-3.5 h-3.5" />
+                </a>
+              )}
+              {theme.social?.facebook && (
+                <a href={theme.social.facebook.startsWith('http') ? theme.social.facebook : `https://facebook.com/${theme.social.facebook}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-amber-700 hover:text-white transition-all shadow-sm">
+                   <Facebook className="w-3.5 h-3.5" />
+                </a>
+              )}
+              {theme.social?.twitter && (
+                <a href={theme.social.twitter.startsWith('http') ? theme.social.twitter : `https://twitter.com/${theme.social.twitter}`} target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-white border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-amber-700 hover:text-white transition-all shadow-sm">
+                   <Twitter className="w-3.5 h-3.5" />
+                </a>
+              )}
             </div>
           </div>
 

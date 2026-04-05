@@ -154,7 +154,7 @@ export default function SectionEditor({
           <div className="space-y-8">
              <div className="flex items-center justify-between border-b border-gray-50 pb-4">
                 <h4 className="text-[10px] font-bold text-gray-400 uppercase">Slides ({section.content.items?.length || 0})</h4>
-                <button onClick={() => onUpdate({ items: [...(section.content.items || []), { title: "New Drop", subtitle: "Limited", buttonText: "Explore", buttonUrl: "/products", image: "" }] })}
+                <button onClick={() => onUpdate({ items: [...(section.content.items || []), { topText: "Handcrafted Luxury", title: "New Drop", subtitle: "Limited Edition", buttonText: "Explore", buttonUrl: "/products", image: "" }] })}
                         className="bg-amber-500 text-white px-4 py-2 rounded-xl text-[10px] font-bold">+ New Slide</button>
              </div>
              <div className="space-y-6">
@@ -162,8 +162,9 @@ export default function SectionEditor({
                    <div key={idx} className="bg-gray-50 rounded-[32px] p-8 border border-gray-100 group/hero">
                       <div className="grid grid-cols-2 gap-8">
                          <div className="space-y-3">
-                            <input className="w-full bg-white rounded-xl px-4 py-3 text-sm font-bold shadow-sm placeholder:text-gray-900" value={item.title} onChange={(e) => { const ni = [...section.content.items]; ni[idx].title = e.target.value; onUpdate({ items: ni }); }} placeholder="Title" />
-                            <input className="w-full bg-white rounded-xl px-4 py-3 text-sm shadow-sm placeholder:text-gray-900" value={item.subtitle} onChange={(e) => { const ni = [...section.content.items]; ni[idx].subtitle = e.target.value; onUpdate({ items: ni }); }} placeholder="Subtitle" />
+                            <input className="w-full bg-white rounded-xl px-4 py-3 text-[10px] font-bold tracking-widest uppercase shadow-sm placeholder:text-gray-900" value={item.topText || ''} onChange={(e) => { const ni = [...section.content.items]; ni[idx].topText = e.target.value; onUpdate({ items: ni }); }} placeholder="Top Accent Text (e.g. Handcrafted Luxury)" />
+                            <input className="w-full bg-white rounded-xl px-4 py-3 text-sm font-bold shadow-sm placeholder:text-gray-900" value={item.title} onChange={(e) => { const ni = [...section.content.items]; ni[idx].title = e.target.value; onUpdate({ items: ni }); }} placeholder="Main Title" />
+                            <input className="w-full bg-white rounded-xl px-4 py-3 text-sm shadow-sm placeholder:text-gray-900" value={item.subtitle} onChange={(e) => { const ni = [...section.content.items]; ni[idx].subtitle = e.target.value; onUpdate({ items: ni }); }} placeholder="Bottom Description" />
                          </div>
                          <div className="space-y-2">
                             <ImageUploadField 

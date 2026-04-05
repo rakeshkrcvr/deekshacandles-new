@@ -5,14 +5,14 @@ const prismaClientSingleton = () => {
 }
 
 declare global {
-  var prismaInstance_v2: ReturnType<typeof prismaClientSingleton> | undefined;
+  var prismaInstance_v3: ReturnType<typeof prismaClientSingleton> | undefined;
 }
 
-const prisma = global.prismaInstance_v2 ?? prismaClientSingleton()
+const prisma = global.prismaInstance_v3 ?? prismaClientSingleton()
 
 export default prisma
 
 if (process.env.NODE_ENV !== 'production') {
-  global.prismaInstance_v2 = prisma;
+  global.prismaInstance_v3 = prisma;
   console.log("💎 Prisma Initialized. Available models:", Object.keys(prisma).filter(k => !k.startsWith('_') && typeof (prisma as unknown as Record<string, unknown>)[k] === 'object'));
 }

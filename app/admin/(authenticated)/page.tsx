@@ -7,11 +7,26 @@ export default async function AdminDashboard() {
   const ordersCount = await prisma.order.count();
   const usersCount = await prisma.user.count();
 
+  const revenueResult = await prisma.order.aggregate({
+    _sum: {
+      total: true,
+    },
+  });
+  const totalRevenue = revenueResult._sum.total || 0;
+
   const stats = [
-    { title: "Total Revenue", value: "₹45,231", icon: IndianRupee, change: "+20.1%", trend: "up", color: "text-emerald-500", bg: "bg-emerald-50" },
-    { title: "Active Users", value: usersCount.toString(), icon: Users, change: "+15%", trend: "up", color: "text-blue-500", bg: "bg-blue-50" },
-    { title: "Products", value: productsCount.toString(), icon: ShoppingBag, change: "+3", trend: "up", color: "text-amber-500", bg: "bg-amber-50" },
-    { title: "Total Orders", value: ordersCount.toString(), icon: TrendingUp, change: "+12.5%", trend: "up", color: "text-purple-500", bg: "bg-purple-50" },
+    { 
+      title: "Total Revenue", 
+      value: `₹${totalRevenue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`, 
+      icon: IndianRupee, 
+      change: "+0%", 
+      trend: "up", 
+      color: "text-emerald-500", 
+      bg: "bg-emerald-50" 
+    },
+    { title: "Active Users", value: usersCount.toLocaleString(), icon: Users, change: "+0%", trend: "up", color: "text-blue-500", bg: "bg-blue-50" },
+    { title: "Products", value: productsCount.toLocaleString(), icon: ShoppingBag, change: "+0%", trend: "up", color: "text-amber-500", bg: "bg-amber-50" },
+    { title: "Total Orders", value: ordersCount.toLocaleString(), icon: TrendingUp, change: "+0%", trend: "up", color: "text-purple-500", bg: "bg-purple-50" },
   ];
 
   const recentOrders = await prisma.order.findMany({

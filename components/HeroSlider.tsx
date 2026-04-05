@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft, ArrowRight, ShoppingBag } from "lucide-react";
 
 interface Slide {
+  topText?: string;
   title: string;
   subtitle: string;
   image: string;
@@ -47,7 +48,7 @@ export default function HeroSlider({ items }: { items: Slide[] }) {
           <div className="relative z-20 h-full flex items-center justify-center text-center px-6">
             <div className={`max-w-4xl transition-all duration-1000 delay-300 ${idx === current ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
               <h2 className="text-white text-[10px] font-bold uppercase tracking-[0.4em] mb-4">
-                 Handcrafted Luxury
+                 {slide.topText || 'Handcrafted Luxury'}
               </h2>
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight uppercase">
                  {slide.title}
