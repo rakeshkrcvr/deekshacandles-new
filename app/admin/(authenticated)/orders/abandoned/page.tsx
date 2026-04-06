@@ -5,6 +5,8 @@ import { ShoppingCart, Mail, Phone, ExternalLink, RefreshCw, AlertCircle, Gift }
 import { AbandonedCheckout } from "@prisma/client";
 import RecoveryLink from "./RecoveryLink";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AbandonedCheckoutsPage() {
   const abandoned: AbandonedCheckout[] = await prisma.abandonedCheckout.findMany({
     orderBy: { createdAt: "desc" },

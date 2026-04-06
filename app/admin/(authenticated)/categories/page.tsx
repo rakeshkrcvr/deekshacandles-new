@@ -3,6 +3,8 @@ import { Tags, Trash2, Plus } from "lucide-react";
 import { revalidatePath } from "next/cache";
 import CategoryManager from "./CategoryManager";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminCategoriesPage() {
   const categories = await prisma.category.findMany({
     include: { parent: true },

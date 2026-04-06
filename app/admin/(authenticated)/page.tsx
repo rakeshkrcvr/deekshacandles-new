@@ -1,6 +1,8 @@
 import prisma from "@/lib/prisma";
 import { TrendingUp, Users, ShoppingBag, IndianRupee } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminDashboard() {
   const productsCount = await prisma.product.count();
   const categoryCount = await prisma.category.count();

@@ -5,6 +5,8 @@ import { Plus } from "lucide-react";
 import ImportExportManager from "./ImportExportManager";
 import ProductTable from "./ProductTable";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminProductsPage() {
   const [products, categories] = await Promise.all([
     prisma.product.findMany({

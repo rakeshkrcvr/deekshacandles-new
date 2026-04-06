@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 import Razorpay from "razorpay";
 import crypto from "crypto";
 import { Resend } from "resend";
+import { revalidatePath } from "next/cache";
 import { getOrderConfirmationEmailHtml } from "@/lib/email-templates";
 
 export async function initiateRazorpayOrder(amount: number, isCOD?: boolean) {
@@ -217,5 +218,6 @@ export async function verifyAndCompleteOrder(
     }
   }
 
+  revalidatePath("/admin", "layout");
   return order.id;
 }
