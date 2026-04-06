@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { format } from "date-fns";
 import { ShoppingCart, Mail, Phone, ExternalLink, RefreshCw, AlertCircle, Gift } from "lucide-react";
-import { AbandonedCheckout } from "@/lib/generated/client";
+import { AbandonedCheckout } from "@prisma/client";
 import RecoveryLink from "./RecoveryLink";
 
 export default async function AbandonedCheckoutsPage() {
