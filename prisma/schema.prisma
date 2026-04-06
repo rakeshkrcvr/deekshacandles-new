@@ -1,6 +1,5 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../lib/generated/client"
 }
 
 datasource db {
@@ -264,6 +263,8 @@ model StoreSettings {
   razorpaySecret   String?
   shiprocketEmail  String?
   shiprocketPassword String?
+
+  supportEmail     String?
 }
 
 ///////////////////////

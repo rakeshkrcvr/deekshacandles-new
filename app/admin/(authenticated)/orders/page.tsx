@@ -90,7 +90,7 @@ export default async function AdminOrdersPage() {
                         <div className={`flex items-center gap-1 px-1.5 py-0.5 rounded-sm border w-fit ${order.paymentId ? 'bg-emerald-50/50 border-emerald-100' : 'bg-amber-50/50 border-amber-100'}`}>
                           {order.paymentId ? <CreditCard className="w-2 h-2 text-emerald-500" /> : <Clock className="w-2 h-2 text-amber-500" />}
                           <span className={`text-[8.5px] font-black uppercase tracking-tight ${order.paymentId ? 'text-emerald-700' : 'text-amber-700'}`}>
-                            {order.paymentId ? 'Paid' : 'Pending'}
+                            {order.paymentId ? 'Paid' : 'COD'}
                           </span>
                         </div>
                       </div>

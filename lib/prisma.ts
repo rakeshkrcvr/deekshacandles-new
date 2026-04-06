@@ -1,4 +1,5 @@
-import { PrismaClient } from './generated/client'
+import { PrismaClient } from '@prisma/client'
+// Restored standard import to fix resolution issues with Next.js 16/Turbopack. No more custom output needed.
 
 const prismaClientSingleton = () => {
   return new PrismaClient()

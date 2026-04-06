@@ -58,7 +58,7 @@ export default async function OrderDetailsPage({ params }: { params: Promise<{ i
               <h1 className="text-2xl font-bold text-gray-900 tracking-tight">#{order.id.slice(-6).toUpperCase()}</h1>
               <div className="flex gap-1.5">
                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black border tracking-wider ${order.paymentId ? 'bg-emerald-50 text-emerald-700 border-emerald-100' : 'bg-amber-50 text-amber-700 border-amber-100'}`}>
-                   {order.paymentId ? '● Paid' : '● Pending'}
+                   {order.paymentId ? '● Paid' : '● COD'}
                  </span>
                  <span className={`px-2.5 py-0.5 rounded-full text-[10px] uppercase font-black border tracking-wider ${statusColors[order.status]}`}>
                    {order.status === 'completed' ? '● Fulfilled' : '● Processing'}

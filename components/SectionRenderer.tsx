@@ -97,9 +97,9 @@ export default async function SectionRenderer({ section }: Props) {
                       <div className="w-20 h-20 bg-white rounded-none overflow-hidden bg-gray-50 border border-gray-100 group relative shadow-lg">
                         {item.icon ? <img src={item.icon} className="w-full h-full object-contain" alt={item.label} /> : <Sparkles className="w-8 h-8 text-amber-500/20" />}
                       </div>
-                      <span className="text-[9px] font-bold text-gray-900 uppercase tracking-widest">
+                       <span className="text-[10px] md:text-[11px] font-bold text-gray-900 uppercase tracking-widest text-center">
                         {item.label}
-                      </span>
+                       </span>
                    </div>
                 ))}
              </div>
@@ -111,7 +111,7 @@ export default async function SectionRenderer({ section }: Props) {
        return (
          <section className="py-24 px-5 md:px-8 bg-white">
             <div className="max-w-7xl mx-auto text-center">
-               <h2 className="text-xs font-bold text-gray-300 uppercase tracking-[0.5em] mb-16 italic">{content.title || 'Trusted By'}</h2>
+               <h2 className="text-[10px] font-bold text-gray-300 uppercase tracking-[0.5em] mb-16 italic">{content.title || 'Trusted By'}</h2>
                <div className="flex flex-wrap items-center justify-center gap-12 md:gap-24 opacity-40 grayscale hover:grayscale-0 transition-all duration-1000">
                   {(content.logos || []).map((l: string, i: number) => (
                     l ? <img key={i} src={l} className="h-8 md:h-12 w-auto object-contain hover:scale-110 transition-transform" alt="brand" /> : null
@@ -127,16 +127,16 @@ export default async function SectionRenderer({ section }: Props) {
             <div className={`max-w-7xl mx-auto rounded-[60px] p-24 text-center relative overflow-hidden shadow-2xl ${content.theme === 'amber' ? 'bg-amber-600' : 'bg-gray-900'}`}>
                <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
                <div className="relative z-10 text-white">
-                  <span className="text-xs font-bold uppercase tracking-[0.5em] mb-8 block italic opacity-60">{content.title}</span>
+                  <span className="text-[10px] font-bold uppercase tracking-[0.5em] mb-8 block italic opacity-60">{content.title}</span>
                   <div className="flex flex-wrap items-center justify-center gap-16 md:gap-24">
                      {['Days', 'Hours', 'Minutes', 'Secs'].map(u => (
                         <div key={u} className="flex flex-col items-center">
                            <span className="text-6xl md:text-9xl font-serif font-bold italic mb-2 tracking-tighter">00</span>
-                           <span className="text-[10px] font-bold uppercase tracking-widest opacity-40">{u}</span>
+                           <span className="text-[6px] font-bold uppercase tracking-widest opacity-40">{u}</span>
                         </div>
                      ))}
                   </div>
-                  <button className="mt-16 bg-white text-gray-900 px-12 py-5 rounded-full font-bold text-xs uppercase tracking-widest hover:scale-105 transition-transform shadow-xl">
+                  <button className="mt-16 bg-white text-gray-900 px-12 py-5 rounded-full font-bold text-[10px] uppercase tracking-widest hover:scale-105 transition-transform shadow-xl">
                      Shop The Event
                   </button>
                </div>
@@ -173,18 +173,18 @@ export default async function SectionRenderer({ section }: Props) {
                      {content.subtitle}
                    </span>
                  )}
-                 <h2 className="text-[28px] sm:text-[36px] md:text-[44px] font-semibold text-[#1e1a4f] tracking-tight">{content.title || 'Frequently Asked Questions'}</h2>
+                  <h2 className="text-[28px] sm:text-[36px] md:text-[44px] font-semibold text-[#1e1a4f] tracking-tight">{content.title || 'Frequently Asked Questions'}</h2>
               </div>
               <div className="space-y-4">
                  {(content.items || []).map((faq: any, i: number) => (
                     <details key={i} className="group bg-[#f8f7fa] rounded-[16px] overflow-hidden cursor-pointer border-l-[6px] border-[#5b40cf] shadow-sm transition-all duration-300" open={i === 0}>
                        <summary className="w-full px-5 sm:px-8 py-5 text-left flex items-center justify-between list-none focus:outline-none">
-                          <span className="font-semibold text-[#1e1a4f] text-[15px] sm:text-[17px] pr-8">{faq.question}</span>
+                          <span className="font-semibold text-[#1e1a4f] text-[13px] sm:text-[15px] pr-8">{faq.question}</span>
                           <div className="w-[30px] h-[30px] shrink-0 rounded-full bg-[#5b40cf] flex items-center justify-center transition-transform duration-300 group-open:rotate-180">
                              <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" /></svg>
                           </div>
                        </summary>
-                       <div className="px-5 sm:px-8 pb-6 pt-0 text-[#6B7280] text-[14px] sm:text-[15px] leading-relaxed w-full sm:w-[90%]">
+                       <div className="px-5 sm:px-8 pb-6 pt-0 text-[#6B7280] text-[10px] sm:text-[11px] leading-relaxed w-full sm:w-[90%]">
                           {faq.answer}
                        </div>
                     </details>
@@ -206,7 +206,7 @@ export default async function SectionRenderer({ section }: Props) {
                   <MapPin className="w-12 h-12 text-amber-600 mb-8" />
                   <h2 className="text-4xl font-serif font-bold text-gray-900 italic mb-6 leading-tight">{content.title}</h2>
                   <p className="text-lg text-gray-500 font-serif italic leading-relaxed mb-10 opacity-70">{content.address}</p>
-                  <button className="bg-gray-900 text-white px-10 py-5 rounded-none font-bold text-xs uppercase tracking-widest hover:bg-black transition-all shadow-xl">Get Directions</button>
+                  <button className="bg-gray-900 text-white px-10 py-5 rounded-none font-bold text-[10px] uppercase tracking-widest hover:bg-black transition-all shadow-xl">Get Directions</button>
                </div>
             </div>
          </section>
@@ -217,7 +217,7 @@ export default async function SectionRenderer({ section }: Props) {
          <section className="py-24 px-5 md:px-8 bg-[#FAF9F6]">
             <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-24 items-center">
                <div className="flex-1 space-y-8">
-                  <span className="text-xs font-bold text-amber-600 uppercase tracking-[0.5em] italic">Contact Us</span>
+                  <span className="text-[10px] font-bold text-amber-600 uppercase tracking-[0.5em] italic">Contact Us</span>
                   <h2 className="text-5xl md:text-8xl font-serif font-bold text-gray-900 italic tracking-tighter leading-[0.9]">{content.title || 'Start Conversations'}</h2>
                   <p className="text-gray-500 text-xl font-serif italic max-w-lg opacity-60">We value every voice. Reach out for bulk inquiries, collaborations, or just a virtual candle talk.</p>
                   <div className="space-y-6 pt-10">
@@ -238,7 +238,7 @@ export default async function SectionRenderer({ section }: Props) {
                      <label className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em] px-2">Message</label>
                      <textarea rows={5} className="w-full bg-gray-50 border-none rounded-none px-8 py-5 text-gray-900 shadow-inner focus:ring-2 focus:ring-amber-500/20" />
                   </div>
-                  <button className="w-full bg-gray-900 text-white flex items-center justify-center gap-4 py-6 rounded-none font-bold uppercase tracking-widest text-xs hover:bg-black transition-all active:scale-95 shadow-2xl">
+                  <button className="w-full bg-gray-900 text-white flex items-center justify-center gap-4 py-6 rounded-none font-bold uppercase tracking-widest text-[10px] hover:bg-black transition-all active:scale-95 shadow-2xl">
                      Send Message <Send className="w-4 h-4" />
                   </button>
                </div>
@@ -293,7 +293,7 @@ export default async function SectionRenderer({ section }: Props) {
             <div className="max-w-7xl mx-auto px-4 md:px-6">
                <div className="flex items-end justify-between mb-10 gap-8">
                   <h2 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">Collection List</h2>
-                  <Link href="/products" className="mb-2 text-[11px] font-bold text-amber-600 uppercase tracking-widest hover:text-amber-700 transition-all hidden md:block">
+                  <Link href="/products" className="mb-2 text-[9px] font-bold text-amber-600 uppercase tracking-widest hover:text-amber-700 transition-all hidden md:block">
                      ALL COLLECTIONS &rarr;
                   </Link>
                </div>
@@ -322,15 +322,15 @@ export default async function SectionRenderer({ section }: Props) {
                           <span className="text-[9px] md:text-[10px] font-bold text-white/80 uppercase tracking-widest mb-3 block">
                             COLLECTION
                           </span>
-                          <h3 className="text-2xl md:text-[32px] font-bold text-white leading-[1.15] drop-shadow-md">
+                          <h3 className="text-2xl md:text-[30px] font-bold text-white leading-[1.15] drop-shadow-md">
                             {cat.name}
                           </h3>
                        </div>
 
                        {/* Content Content bottom block */}
                        <div className="relative z-10 mt-auto pt-8">
-                          <div className="inline-flex items-center bg-white text-gray-900 px-5 py-2.5 rounded-lg text-[11px] font-bold shadow-xl shadow-black/10 group-hover:-translate-y-1 transition-transform duration-300">
-                             Browse Gallery
+                          <div className="inline-flex items-center bg-white text-gray-900 px-6 py-3 rounded-lg text-[12px] font-bold shadow-xl shadow-black/10 group-hover:-translate-y-1 transition-transform duration-300">
+                             Shop Now
                           </div>
                        </div>
                     </Link>
@@ -339,7 +339,7 @@ export default async function SectionRenderer({ section }: Props) {
                
                {/* Mobile Only All Collections button */}
                <div className="mt-8 text-center md:hidden">
-                  <Link href="/products" className="text-[11px] font-bold text-amber-600 uppercase tracking-widest">
+                  <Link href="/products" className="text-[7px] font-bold text-amber-600 uppercase tracking-widest">
                      ALL COLLECTIONS &rarr;
                   </Link>
                </div>
@@ -357,7 +357,7 @@ export default async function SectionRenderer({ section }: Props) {
           <div className="max-w-7xl mx-auto px-5 md:px-8">
              <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
                 <div className="space-y-2">
-                  <span className="text-[10px] font-bold text-amber-600 uppercase tracking-[0.2em] block">Luxe Collection</span>
+                  <span className="text-[6px] font-bold text-amber-600 uppercase tracking-[0.2em] block">Luxe Collection</span>
                   <h2 className="text-3xl md:text-4xl font-bold text-gray-900 tracking-tight leading-tight">{content.title}</h2>
                 </div>
                 <Link href="/products" className="bg-gray-50 hover:bg-black hover:text-white px-8 py-3 rounded-none overflow-hidden transition-all shadow-sm flex items-center gap-2 group">
@@ -393,7 +393,7 @@ export default async function SectionRenderer({ section }: Props) {
                        <div className="aspect-video rounded-none overflow-hidden bg-gray-50 mb-8 border border-gray-100 shadow-md relative">
                           <img src={`https://images.unsplash.com/photo-1603006905501-4470fc38ad72?auto=format&fit=crop&q=80&w=800&i=${i}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" alt="blog" />
                        </div>
-                       <span className="text-[10px] font-bold uppercase tracking-[0.3em] text-amber-600 block mb-4 italic">Art of Living • March 2024</span>
+                       <span className="text-[6px] font-bold uppercase tracking-[0.3em] text-amber-600 block mb-4 italic">Art of Living • March 2024</span>
                        <h3 className="text-2xl font-serif font-bold italic text-gray-900 mb-4 group-hover:text-amber-600 transition-colors leading-tight">The Secret to Long Lasting Candle Scent</h3>
                        <p className="text-gray-500 font-serif italic text-lg opacity-60 line-clamp-2">Discover how we process our essential oils to ensure your home stays fragrant for hours...</p>
                     </div>
@@ -412,10 +412,10 @@ export default async function SectionRenderer({ section }: Props) {
                    {[1,2,3,4,5].map(s => <svg key={s} className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" /></svg>)}
                 </div>
                 <h2 className="text-3xl md:text-[40px] font-bold text-gray-900 text-center leading-tight tracking-tight mb-2">{content.title || 'What Our Customers Say'}</h2>
-                {content.subtitle && <p className="text-gray-500 font-medium text-lg text-center max-w-2xl">{content.subtitle}</p>}
+                {content.subtitle && <p className="text-gray-500 font-medium text-base text-center max-w-2xl">{content.subtitle}</p>}
              </div>
              <div className="flex items-center justify-between mb-8 w-full border-b border-gray-100 pb-2">
-                 <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Swipe or Drag to view more</p>
+                 <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Swipe or Drag to view more</p>
                  <div className="flex gap-2">
                      <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50">&larr;</button>
                      <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-50">&rarr;</button>
@@ -442,7 +442,7 @@ export default async function SectionRenderer({ section }: Props) {
                         </div>
                         
                         {/* Review Text */}
-                        <div className="text-gray-800 font-medium text-[15px] md:text-base leading-relaxed flex-1 mb-8 z-10 w-full relative">
+                        <div className="text-gray-800 font-medium text-[11px] md:text-[12px] leading-relaxed flex-1 mb-8 z-10 w-full relative">
                            {rev.text}
                         </div>
                         
@@ -459,8 +459,8 @@ export default async function SectionRenderer({ section }: Props) {
                              </div>
                            )}
                            <div className="flex flex-col">
-                              <span className="font-bold text-gray-900 text-[15px]">{rev.name}</span>
-                              <span className="text-xs font-semibold text-gray-400">{rev.role || 'Verified Buyer'}</span>
+                              <span className="font-bold text-gray-900 text-[12px]">{rev.name}</span>
+                              <span className="text-[8px] font-semibold text-gray-400">{rev.role || 'Verified Buyer'}</span>
                            </div>
                         </div>
                      </div>

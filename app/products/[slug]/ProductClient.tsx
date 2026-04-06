@@ -72,12 +72,12 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
               className="object-cover w-full h-full object-center hover:scale-105 transition-transform duration-700 ease-in-out"
             />
             {product.offerTag && (
-              <div className="absolute top-4 right-4 h-6 flex items-center bg-gradient-to-r from-rose-50/95 to-orange-50/95 backdrop-blur-md text-rose-600 px-3 text-[10px] font-bold rounded shadow-sm uppercase tracking-widest border border-rose-100 z-10">
+              <div className="absolute top-4 right-4 h-6 flex items-center bg-gradient-to-r from-rose-50/95 to-orange-50/95 backdrop-blur-md text-rose-600 px-3 text-[9px] font-bold rounded shadow-sm uppercase tracking-widest border border-rose-100 z-10">
                 {product.offerTag}
               </div>
             )}
             {product.discount > 0 && (
-              <div className="absolute top-4 left-4 h-6 flex items-center bg-[#ff2a40] text-white text-[10px] font-bold px-3 rounded shadow-sm tracking-widest uppercase z-10">
+              <div className="absolute top-4 left-4 h-6 flex items-center bg-[#ff2a40] text-white text-[9px] font-bold px-3 rounded shadow-sm tracking-widest uppercase z-10">
                 {product.discount}% OFF
               </div>
             )}
@@ -155,7 +155,7 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
           </div>
 
           <div className="flex items-end gap-3 mb-5">
-            <span className="text-xl lg:text-2xl font-black text-gray-900 tracking-tighter">
+            <span className="text-lg lg:text-xl font-black text-gray-900 tracking-tighter">
               ₹{finalPrice}
             </span>
             {product.discount > 0 && (
@@ -170,8 +170,8 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
             <div className="bg-red-50 border border-red-100 rounded-xl p-2.5 flex gap-2.5 items-start mb-5">
               <span className="text-lg mt-0.5">🎁</span>
               <div className="leading-tight">
-                <h4 className="font-bold text-red-800 text-[9px] tracking-widest uppercase mb-0.5">Triple Treat Alert</h4>
-                <p className="text-red-700/90 text-[11px] font-medium">
+                <h4 className="font-bold text-red-800 text-[7px] tracking-widest uppercase mb-0.5">Triple Treat Alert</h4>
+                <p className="text-red-700/90 text-[9px] font-medium">
                   {product.tripleTreatAlert}
                 </p>
               </div>
@@ -212,11 +212,11 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
 
           {/* Icon Badges */}
           <div className="flex flex-wrap gap-2 mb-8">
-             <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50/50 border border-amber-100 rounded-full text-amber-900 text-[11px] font-bold shadow-sm uppercase tracking-wider">
+             <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50/50 border border-amber-100 rounded-full text-amber-900 text-[9px] font-bold shadow-sm uppercase tracking-wider">
                 <Leaf className="w-3.5 h-3.5 text-emerald-600" />
                 100% Pure Soy
              </div>
-             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-slate-800 text-[11px] font-bold shadow-sm uppercase tracking-wider">
+             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-slate-800 text-[9px] font-bold shadow-sm uppercase tracking-wider">
                 <Info className="w-3.5 h-3.5 text-blue-600" />
                 Handmade in India
              </div>
@@ -240,15 +240,15 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
             <div className="flex items-center gap-3 p-3 rounded-sm bg-orange-50/50 text-orange-900 border border-orange-100/30">
               <Truck className="w-5 h-5 text-orange-600" />
               <div>
-                <p className="font-bold text-[9px] uppercase tracking-widest text-orange-800/80">Delivery Estimate</p>
-                <p className="text-[11px] text-orange-700/70 font-medium">4 to 7 Business Days</p>
+                <p className="font-bold text-[7px] uppercase tracking-widest text-orange-800/80">Delivery Estimate</p>
+                <p className="text-[9px] text-orange-700/70 font-medium">4 to 7 Business Days</p>
               </div>
             </div>
             <div className="flex items-center gap-3 p-3 rounded-sm bg-emerald-50/50 text-emerald-900 border border-emerald-100/30">
               <ShieldCheck className="w-5 h-5 text-emerald-600" />
               <div>
-                <p className="font-bold text-[9px] uppercase tracking-widest text-emerald-800/80">Quality Promise</p>
-                <p className="text-[11px] text-emerald-700/70 font-medium">Hassle-Free Returns</p>
+                <p className="font-bold text-[7px] uppercase tracking-widest text-emerald-800/80">Quality Promise</p>
+                <p className="text-[9px] text-emerald-700/70 font-medium">Hassle-Free Returns</p>
               </div>
             </div>
           </div>
@@ -257,11 +257,11 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
           <div className="mb-10 bg-gray-50/30 border border-gray-100 rounded-sm p-4 overflow-hidden">
             <div className="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
                <div className="w-1 h-4 bg-gray-900 rounded-full" />
-               <h3 className="text-[10px] uppercase tracking-[0.2em] font-black text-gray-900">Product Specifics</h3>
+               <h3 className="text-[8px] uppercase tracking-[0.2em] font-black text-gray-900">Product Specifics</h3>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
               {Object.entries(specs).map(([key, val]) => (
-                <div key={key} className="flex justify-between items-center text-[11px] py-1 border-b border-gray-50/50 last:border-0 sm:even:border-b sm:nth-last-2:border-0">
+                <div key={key} className="flex justify-between items-center text-[9px] py-1 border-b border-gray-50/50 last:border-0 sm:even:border-b sm:nth-last-2:border-0">
                   <span className="text-gray-400 font-bold uppercase tracking-wider">{key}</span>
                   <span className="text-gray-900 font-black text-right ml-4">{String(val)}</span>
                 </div>
@@ -291,7 +291,7 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
             {/* Header */}
             <div className="text-center mb-16">
               <span className="text-[#9e3253] font-bold tracking-[0.2em] uppercase mb-4 block text-xs">Handpicked for you</span>
-              <h2 className="text-4xl md:text-5xl font-serif text-gray-900 mb-6 font-bold tracking-wide leading-tight">
+              <h2 className="text-3xl md:text-4xl font-serif text-gray-900 mb-6 font-bold tracking-wide leading-tight">
                 Related Products
               </h2>
               <div className="w-16 h-1 bg-[#9e3253] mx-auto rounded-full"></div>
@@ -362,8 +362,8 @@ function ProductTabs({ product, specs }: { product: any, specs: any }) {
               <div className="grid grid-cols-1 gap-8">
                 {additionalDetails.map((detail: any) => (
                   <div key={detail.id} className="border-b border-gray-100 pb-8 last:border-0">
-                    <h4 className="text-[10px] uppercase tracking-[0.2em] font-black text-gray-400 mb-4">{detail.label}</h4>
-                    <div className="text-gray-900 text-sm font-bold leading-[1.8] whitespace-pre-line max-w-4xl">
+                    <h4 className="text-[8px] uppercase tracking-[0.2em] font-black text-gray-400 mb-4">{detail.label}</h4>
+                    <div className="text-gray-900 text-[12px] font-bold leading-[1.8] whitespace-pre-line max-w-4xl">
                       {detail.value}
                     </div>
                   </div>
@@ -377,7 +377,7 @@ function ProductTabs({ product, specs }: { product: any, specs: any }) {
       case 'Terms':
         const termsContent = getDetailByLabel('Terms');
         return (
-          <div className="text-[13px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
+          <div className="text-[11px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
             {termsContent ? (
               <div className="whitespace-pre-line bg-gray-50/50 p-4 rounded-sm border border-gray-100">{termsContent}</div>
             ) : (
@@ -393,7 +393,7 @@ function ProductTabs({ product, specs }: { product: any, specs: any }) {
       case 'Returns':
         const returnsContent = getDetailByLabel('Return');
         return (
-          <div className="text-[13px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
+          <div className="text-[11px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
             {returnsContent ? (
               <div className="whitespace-pre-line bg-gray-50/50 p-4 rounded-sm border border-gray-100">{returnsContent}</div>
             ) : (
@@ -409,7 +409,7 @@ function ProductTabs({ product, specs }: { product: any, specs: any }) {
       case 'Guarantee':
         const guaranteeContent = getDetailByLabel('Guarantee');
         return (
-          <div className="text-[13px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
+          <div className="text-[11px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
             {guaranteeContent ? (
               <div className="whitespace-pre-line bg-gray-50/50 p-4 rounded-sm border border-gray-100">{guaranteeContent}</div>
             ) : (

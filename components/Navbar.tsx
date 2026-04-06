@@ -67,9 +67,9 @@ export default function Navbar({ theme }: { theme: any }) {
                     className="h-10 md:h-12 w-auto object-contain" 
                   />
                 ) : (
-                  <span className="text-xl md:text-2xl font-bold tracking-tighter text-gray-900 uppercase">
+                   <span className="text-lg md:text-xl font-bold tracking-tighter text-gray-900 uppercase">
                     {theme?.logoText || "DEEKSHA CANDLES"}
-                  </span>
+                   </span>
                 )}
               </Link>
             </div>
@@ -85,7 +85,7 @@ export default function Navbar({ theme }: { theme: any }) {
                     </Link>
                     <div className="absolute top-full left-0 bg-white border border-gray-100 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 min-w-[200px] z-50 rounded-xl p-2 transform translate-y-2 group-hover:translate-y-0">
                       {link.submenu.map((sub: any) => (
-                        <Link key={sub.id} href={sub.url} className="block px-4 py-2.5 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition text-xs font-bold text-gray-600 uppercase tracking-wider">
+                        <Link key={sub.id} href={sub.url} className="block px-4 py-2.5 hover:bg-amber-50 hover:text-amber-700 rounded-lg transition text-[10px] font-bold text-gray-600 uppercase tracking-wider">
                           {sub.label}
                         </Link>
                       ))}
@@ -181,7 +181,7 @@ export default function Navbar({ theme }: { theme: any }) {
                             <Link 
                               key={sub.id} 
                               href={sub.url} 
-                              className="block p-3 text-gray-600 hover:text-amber-700 hover:bg-white text-xs font-bold uppercase tracking-wider rounded-lg transition"
+                              className="block p-3 text-gray-600 hover:text-amber-700 hover:bg-white text-[11px] font-bold uppercase tracking-wider rounded-lg transition"
                               onClick={() => setIsMobileMenuOpen(false)}
                             >
                               <span className="opacity-50 mr-2">↳</span> {sub.label}

@@ -25,7 +25,7 @@ export default function CartDrawer() {
         <div className="flex items-center justify-between p-6 border-b border-gray-100">
           <div className="flex items-center gap-2">
             <ShoppingBag className="w-5 h-5 text-gray-900" />
-            <h2 className="text-xl font-bold text-gray-900">Your Cart</h2>
+            <h2 className="text-lg font-bold text-gray-900">Your Cart</h2>
           </div>
           <button 
             onClick={() => setDrawerOpen(false)}
@@ -89,7 +89,7 @@ export default function CartDrawer() {
         {/* Footer */}
         {items.length > 0 && (
           <div className="p-6 border-t border-gray-100 bg-gray-50/50 space-y-4">
-            <div className="flex items-center justify-between text-lg font-bold">
+            <div className="flex items-center justify-between text-base font-bold">
               <span>Subtotal</span>
               <span>₹{cartTotal}</span>
             </div>

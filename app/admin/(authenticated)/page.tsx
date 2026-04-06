@@ -79,6 +79,7 @@ export default async function AdminDashboard() {
                 <th className="px-6 py-4">Customer</th>
                 <th className="px-6 py-4">Date</th>
                 <th className="px-6 py-4">Status</th>
+                <th className="px-6 py-4">Payment</th>
                 <th className="px-6 py-4 text-right">Amount</th>
               </tr>
             </thead>
@@ -92,10 +93,16 @@ export default async function AdminDashboard() {
                     <td className="px-6 py-4">
                       <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
                         order.status === 'completed' ? 'bg-emerald-100 text-emerald-700' :
+                        order.status === 'paid' ? 'bg-blue-100 text-blue-700' :
                         order.status === 'pending' ? 'bg-amber-100 text-amber-700' :
                         'bg-gray-100 text-gray-700'
                       }`}>
                         {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 font-semibold text-xs">
+                      <span className={order.paymentId ? 'text-emerald-600' : 'text-amber-600'}>
+                        {order.paymentId ? 'PAID' : 'COD'}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-right font-medium text-gray-900">₹{order.total}</td>

@@ -3,6 +3,8 @@
 import prisma from "@/lib/prisma";
 import Razorpay from "razorpay";
 import crypto from "crypto";
+import { Resend } from "resend";
+import { getOrderConfirmationEmailHtml } from "@/lib/email-templates";
 
 export async function initiateRazorpayOrder(amount: number, isCOD?: boolean) {
   if (isCOD) {
@@ -65,7 +67,7 @@ export async function verifyAndCompleteOrder(
   const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
   // Use a transaction
-  const order = await prisma.$transaction(async (tx) => {
+  const order = await prisma.$transaction(async (tx: any) => {
     let user = await tx.user.findUnique({ where: { email } });
     if (!user) {
       user = await tx.user.create({ data: { name, email } });
@@ -195,6 +197,23 @@ export async function verifyAndCompleteOrder(
     } catch (err) {
       console.error("Shiprocket sync failed:", err);
       // Fails silently for user, but order is saved
+    }
+  }
+
+  // --- Send Notifications ---
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey) {
+    try {
+      const resend = new Resend(resendKey);
+      await resend.emails.send({
+        from: process.env.SUPPORT_EMAIL || settings?.supportEmail || "Deeksha Candles <orders@deekshacandles.com>",
+        to: email,
+        subject: `Order Confirmation #${order.id.slice(-6).toUpperCase()}`,
+        html: getOrderConfirmationEmailHtml(order.id, name, cartItems, total),
+      });
+      console.log("Confirmation email sent to:", email);
+    } catch (err) {
+      console.error("Email notification failed:", err);
     }
   }
 

@@ -59,17 +59,17 @@ export default function ProductCard({ product }: { product: Product }) {
       {/* Image Container */}
       <div className="relative w-full aspect-square md:aspect-[4/5] bg-[#fdfaf6] rounded-[28px] overflow-hidden mb-3">
         {(product.discount ?? 0) > 0 && product.stock > 0 && (
-          <div className="absolute top-3 left-3 h-5 flex items-center bg-[#ff2a40] text-white text-[8px] md:text-[9px] font-bold px-2 rounded-sm tracking-widest uppercase z-10 shadow-sm border border-transparent">
+          <div className="absolute top-3 left-3 h-5 flex items-center bg-[#ff2a40] text-white text-[9px] font-bold px-2 rounded-sm tracking-widest uppercase z-10 shadow-sm border border-transparent">
             {product.discount}% OFF
           </div>
         )}
         {product.stock === 0 && (
-          <div className="absolute top-3 left-3 h-5 flex items-center bg-gray-900 text-white text-[8px] md:text-[9px] font-bold px-2 rounded-sm tracking-widest uppercase z-10 shadow-sm border border-transparent">
+          <div className="absolute top-3 left-3 h-5 flex items-center bg-gray-900 text-white text-[9px] font-bold px-2 rounded-sm tracking-widest uppercase z-10 shadow-sm border border-transparent">
             SOLD OUT
           </div>
         )}
         {product.offerTag && (
-          <div className="absolute top-3 right-3 h-5 flex items-center bg-gradient-to-r from-rose-50/95 to-orange-50/95 backdrop-blur-md text-rose-600 px-2 text-[8px] md:text-[9px] font-bold rounded-sm shadow-sm uppercase tracking-widest border border-rose-100 z-10">
+          <div className="absolute top-3 right-3 h-5 flex items-center bg-gradient-to-r from-rose-50/95 to-orange-50/95 backdrop-blur-md text-rose-600 px-2 text-[9px] font-bold rounded-sm shadow-sm uppercase tracking-widest border border-rose-100 z-10">
             {product.offerTag}
           </div>
         )}
@@ -83,7 +83,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
       {/* Tags & Offers */}
       <div className="flex flex-col gap-1.5 mb-1.5 items-start">
-        <span className="bg-[#fff7e5] text-[#e67300] px-2.5 py-1 text-[9px] rounded-full uppercase font-bold tracking-widest border border-orange-100/50">
+        <span className="bg-[#fff7e5] text-[#e67300] px-2.5 py-1 text-[7px] rounded-full uppercase font-bold tracking-widest border border-orange-100/50">
           {product.categories?.[0]?.name || "CANDLES"}
         </span>
       </div>

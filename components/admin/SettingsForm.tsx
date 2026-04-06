@@ -225,8 +225,36 @@ export default function SettingsForm({ settings }: { settings: Record<string, an
             />
           </div>
         </div>
-        <p className="text-sm text-gray-500">Upon successful checkout, orders will be automatically pushed to Shiprocket if these credentials are valid.</p>
+      {/* Email Section */}
+      <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-100 flex flex-col gap-6 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 relative z-10">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+              <Zap className="w-6 h-6 text-amber-500" /> Notifications
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">Configure the official email ID for order receipts.</p>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 gap-6 relative z-10">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Support Email (Sent From)</label>
+            <input 
+              name="supportEmail" 
+              defaultValue={settings?.supportEmail || ""} 
+              type="email" 
+              placeholder="orders@deekshacandles.com" 
+              className="w-full border border-gray-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-amber-500 outline-none text-sm" 
+            />
+            <p className="text-[10px] text-gray-400 mt-2 italic font-medium uppercase tracking-widest">
+              * Make sure this email is verified in your Resend.com dashboard.
+            </p>
+          </div>
+        </div>
       </div>
+
+      <p className="text-sm text-gray-500">Upon successful checkout, orders will be automatically pushed to Shiprocket if these credentials are valid.</p>
+    </div>
 
       <div className="flex flex-col items-end gap-4 mt-8">
         <button type="submit" className="bg-gray-900 hover:bg-gray-800 text-white px-8 py-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-xl hover:shadow-2xl active:scale-[0.98] w-full max-w-sm">
