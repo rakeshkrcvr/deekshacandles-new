@@ -13,33 +13,48 @@
       "submenu": [
         {
           "id": "17751163882820.8125356427953417",
-          "label": "Candles",
-          "url": "/category/Candles"
+          "label": "Men’s Fashion",
+          "url": "/category/mens-fashion"
         },
         {
           "id": "17751167604740.7109073939954955",
+          "label": "Belts",
+          "url": "/category/belts"
+        },
+        {
+          "id": "17751167645630.8136961356253775",
+          "label": "Fashionable Shirt",
+          "url": "/category/fashionable-shirt"
+        },
+        {
+          "id": "17751167676350.8489626203794347",
+          "label": "Jeans",
+          "url": "/category/jeans"
+        },
+        {
+          "id": "17751167706530.7571534774576019",
           "label": "Gifts",
           "url": "/category/gifts"
         },
         {
-          "id": "17751167645630.8136961356253775",
-          "label": "Jelly Canldes",
-          "url": "/category/jelly-canldes"
+          "id": "17751179583340.3805819554250771",
+          "label": "Shoses",
+          "url": "/category/shoses"
         },
         {
-          "id": "17751167676350.8489626203794347",
-          "label": "Romentic Candles",
-          "url": "/category/romentic-candles"
+          "id": "17757425036920.6767710091374332",
+          "label": "Wallet",
+          "url": "/category/wallet"
         },
         {
-          "id": "17751167706530.7571534774576019",
+          "id": "17757425177020.6877237581901104",
           "label": "scented candles",
           "url": "/category/scented-candles"
         },
         {
-          "id": "17751179583340.3805819554250771",
-          "label": "soya wax candles",
-          "url": "/category/soya-wax-candles"
+          "id": "17757425535220.3075764272079844",
+          "label": "women accessories",
+          "url": "/category/women-accessories"
         }
       ]
     },

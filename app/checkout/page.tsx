@@ -88,7 +88,7 @@ function CheckoutContent() {
         ...debouncedData,
         cartItems: items,
         total: items.reduce((acc, i) => acc + i.price * i.quantity, 0),
-        discountAmount: appliedCoupon ? (appliedCoupon.discountType === 'PERCENTAGE' ? (items.reduce((acc, i) => acc + i.price * i.quantity, 0) * appliedCoupon.discountValue) / 100 : appliedCoupon.discountValue) : 0,
+        discountAmount: appliedCoupon ? (appliedCoupon.discountType === 'PERCENTAGE' ? (items.reduce((acc, i) => acc + i.price * i.quantity, 0) * (appliedCoupon.discountValue || 0)) / 100 : (appliedCoupon.discountValue || 0)) : 0,
         couponCode: appliedCoupon?.code
       }),
       headers: { "Content-Type": "application/json" }
@@ -97,11 +97,35 @@ function CheckoutContent() {
 
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
   
-  const discountAmount = appliedCoupon ? (
-    appliedCoupon.discountType === 'PERCENTAGE' 
-      ? (subtotal * appliedCoupon.discountValue) / 100 
-      : appliedCoupon.discountValue
-  ) : 0;
+  let calculatedDiscount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === 'PERCENTAGE') {
+      calculatedDiscount = (subtotal * (appliedCoupon.discountValue || 0)) / 100;
+      if (appliedCoupon.maxDiscount && calculatedDiscount > appliedCoupon.maxDiscount) {
+        calculatedDiscount = appliedCoupon.maxDiscount;
+      }
+    } else if (appliedCoupon.discountType === 'FIXED_AMOUNT') {
+      calculatedDiscount = appliedCoupon.discountValue || 0;
+    } else if (appliedCoupon.discountType === 'BOGO') {
+      const b = appliedCoupon.buyQuantity || 0;
+      const g = appliedCoupon.getQuantity || 0;
+      if (b > 0 && g > 0) {
+        let allItems: number[] = [];
+        for (const item of items) {
+          for (let i = 0; i < item.quantity; i++) allItems.push(item.price);
+        }
+        allItems.sort((x, y) => x - y); // Ascending order
+        const totalItems = allItems.length;
+        const sets = Math.floor(totalItems / (b + g));
+        const freeItems = sets * g;
+        for (let i = 0; i < freeItems; i++) {
+          calculatedDiscount += allItems[i];
+        }
+      }
+    }
+  }
+
+  const discountAmount = calculatedDiscount;
 
   const totalAmount = subtotal - discountAmount;
 
@@ -123,7 +147,15 @@ function CheckoutContent() {
     try {
       const res = await fetch("/api/discounts/apply", {
         method: "POST",
-        body: JSON.stringify({ code: couponCode, cartTotal: subtotal }),
+        body: JSON.stringify({ 
+          code: couponCode, 
+          cartTotal: subtotal,
+          items: items.map(i => ({
+            id: i.id.split('-')[0], // Extract base product ID
+            price: i.price,
+            quantity: i.quantity
+          }))
+        }),
         headers: { "Content-Type": "application/json" },
       });
       const data = await res.json();
@@ -172,7 +204,7 @@ function CheckoutContent() {
 
       if (isCashOnDelivery || isCOD) {
         // Fallback or intentionally COD
-        const finalId = await verifyAndCompleteOrder(null, checkoutData, cartData, affiliateId);
+        const finalId = await verifyAndCompleteOrder(null, checkoutData, cartData, affiliateId, totalAmount);
         if (finalId) {
           clearCart();
           router.push("/checkout/success");
@@ -205,7 +237,8 @@ function CheckoutContent() {
                },
                checkoutData,
                cartData,
-               affiliateId
+               affiliateId,
+               totalAmount
              );
              if (finalId) {
                clearCart();
@@ -474,7 +507,7 @@ function CheckoutContent() {
             {appliedCoupon && (
               <div className="flex justify-between text-sm text-emerald-600">
                 <span>Discount ({appliedCoupon.code})</span>
-                <span className="font-medium">-₹{discountAmount.toFixed(2)}</span>
+                <span className="font-medium">-₹{Number(discountAmount || 0).toFixed(2)}</span>
               </div>
             )}
             <div className="flex justify-between text-sm text-gray-600">

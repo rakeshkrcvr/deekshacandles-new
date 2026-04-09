@@ -40,6 +40,60 @@ export async function deleteProduct(id: string) {
   revalidatePath("/admin/products");
 }
 
+export async function duplicateProduct(id: string) {
+  const original = await prisma.product.findUnique({
+    where: { id },
+    include: {
+      categories: true,
+      images: true,
+      details: true
+    }
+  });
+
+  if (!original) throw new Error("Product not found");
+
+  const newTitle = `${original.title} (Copy)`;
+  let newSlug = slugify(newTitle);
+  
+  // Ensure slug is unique
+  let count = 1;
+  let slugExists = await prisma.product.findUnique({ where: { slug: newSlug } });
+  while (slugExists) {
+    newSlug = slugify(`${original.title} Copy ${count++}`);
+    slugExists = await prisma.product.findUnique({ where: { slug: newSlug } });
+  }
+
+  await prisma.product.create({
+    data: {
+      title: newTitle,
+      slug: newSlug,
+      description: original.description,
+      price: original.price,
+      discount: original.discount,
+      stock: original.stock,
+      offerTag: original.offerTag,
+      tripleTreatAlert: original.tripleTreatAlert,
+      countdownExpiry: original.countdownExpiry,
+      specifications: original.specifications || undefined,
+      deliveryEstimate: original.deliveryEstimate,
+      badges: original.badges,
+      imageUrls: original.imageUrls,
+      relatedProductIds: original.relatedProductIds,
+      categories: {
+        connect: original.categories.map(c => ({ id: c.id }))
+      },
+      images: {
+        create: original.images.map(img => ({ url: img.url }))
+      },
+      details: {
+        create: original.details.map(d => ({ label: d.label, value: d.value }))
+      }
+    }
+  });
+
+  revalidatePath("/admin/products");
+}
+
 // --- Categories ---
 export async function createCategory(formData: FormData) {
   const name = formData.get("name") as string;

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { 
   Star, Truck, ShieldCheck, Heart, Share2, 
-  Leaf, Info, ChevronDown, ChevronUp, ShoppingBag, Clock
+  Leaf, Info, ChevronDown, ChevronUp, ShoppingBag, Clock,
+  Ruler, X
 } from "lucide-react";
 import AddToCartButton from "@/components/AddToCartButton";
 import ProductReviews from "./ProductReviews";
@@ -22,6 +23,9 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
     "https://images.unsplash.com/photo-1602874801007-bd458bb1b8b6?auto=format&fit=crop&q=80&w=1000"
   );
   const [selectedSpec, setSelectedSpec] = useState<string | null>(null);
+  const [selectedSize, setSelectedSize] = useState<string>("M");
+  const [selectedColor, setSelectedColor] = useState<string | null>(null);
+  const [showSizeChart, setShowSizeChart] = useState(false);
 
   const imagesList = product.imageUrls?.length > 0 
     ? product.imageUrls 
@@ -41,23 +45,50 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
     : 0;
   const finalPrice = product.price - (product.discount ? (product.price * product.discount) / 100 : 0);
 
-  let specs: any = {
-    "Net Weight": "350gm",
-    "Burn Time": "60hrs",
-    "Wax Type": "Soy + Gel",
-    "Fragrance": "Coffee & Oud",
-    "Glass Dimensions": "3x2 inch"
-  };
+  let specs: any = {};
+  let template: string = 'candles';
+  let sliderOffers: { id: string, title: string, code: string }[] = [];
 
   if (product.specifications) {
-    if (typeof product.specifications === 'string') {
-      try {
-        specs = JSON.parse(product.specifications);
-      } catch (e) {}
-    } else {
-      specs = product.specifications;
+    const rawSpecs = typeof product.specifications === 'string' ? JSON.parse(product.specifications) : product.specifications;
+    if (rawSpecs && typeof rawSpecs === 'object') {
+      sliderOffers = (rawSpecs as any)._sliderOffers || [];
+      if (rawSpecs._template) {
+        template = rawSpecs._template;
+        // Filter out internal fields
+        const { _template, _sliderOffers, ...rest } = rawSpecs;
+        specs = rest;
+      } else {
+        specs = rawSpecs;
+      }
     }
+  } else {
+    // Default fallback for old products
+    specs = {
+      "Net Weight": "350gm",
+      "Burn Time": "60hrs",
+      "Wax Type": "Soy + Gel",
+      "Fragrance": "Coffee & Oud",
+      "Glass Dimensions": "3x2 inch"
+    };
   }
+
+  const availableColors = specs["Color Hex Codes"] ? specs["Color Hex Codes"].split(',').map((c: string) => c.trim()) : [];
+  
+  let availableSizesList = specs["Available Sizes"] ? specs["Available Sizes"].split(',').map((s: string) => s.trim()) : [];
+  if (availableSizesList.length === 0) {
+    if (template === 'apparel') availableSizesList = ['S', 'M', 'L', 'XL', 'XXL'];
+    if (template === 'footwear') availableSizesList = ['6', '7', '8', '9', '10', '11'];
+  }
+
+  useEffect(() => {
+    if (availableSizesList.length > 0 && !availableSizesList.includes(selectedSize)) {
+      setSelectedSize(availableSizesList[0]);
+    }
+  }, [availableSizesList, selectedSize]);
+
+  const dispatchTime = specs["Dispatch Time"] || "4 to 7 Business Days";
+  const returnPolicyNote = specs["Return Policy Note"] || "Hassle-Free Returns";
 
   return (
     <>
@@ -154,16 +185,41 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
              </div>
           </div>
 
-          <div className="flex items-end gap-3 mb-5">
-            <span className="text-lg lg:text-xl font-black text-gray-900 tracking-tighter">
-              ₹{finalPrice}
+          <div className="flex items-center gap-3 mb-6">
+            <span className="text-3xl lg:text-4xl font-black text-gray-900 tracking-tighter">
+              ₹{Math.round(finalPrice)}
             </span>
             {product.discount > 0 && (
-              <span className="text-sm text-gray-400 line-through mb-0.5 font-light">
-                ₹{product.price}
-              </span>
+              <div className="flex items-center gap-2.5 mb-1.5">
+                <span className="text-base lg:text-lg text-gray-400 line-through font-medium">
+                  ₹{product.price}
+                </span>
+                <span className="bg-[#032e2c] text-white text-[11px] lg:text-[12px] font-black px-2.5 py-1 rounded-lg uppercase tracking-tight">
+                  {Math.round(((product.price - finalPrice) / product.price) * 100)}% off
+                </span>
+              </div>
             )}
           </div>
+
+          {/* Slider Offers */}
+          {sliderOffers.length > 0 && (
+            <div className="mb-6">
+              <h3 className="font-bold text-[#032e2c] text-[15px] mb-3 leading-none tracking-tight">Save Extra With Exclusive Offers</h3>
+              <div className="flex gap-3 overflow-x-auto snap-x hide-scrollbar pb-2">
+                {sliderOffers.map((offer) => {
+                  if (!offer || !offer.id) return null;
+                  return (
+                    <div key={offer.id} className="snap-start flex-shrink-0 w-64 bg-[#f0e4db] border border-[#032e2c] rounded-xl p-4 flex flex-col items-center text-center justify-between">
+                      <p className="text-[#032e2c] font-black text-[14px] leading-snug mb-4">{offer.title}</p>
+                      <div className="border border-[#032e2c] rounded-lg text-[11px] font-black text-[#032e2c] px-4 py-2 uppercase tracking-widest bg-transparent">
+                        {offer.code?.toLowerCase().startsWith('code:') ? offer.code.substring(5).trim() : offer.code}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
 
           {/* Triple Treat Alert */}
           {product.tripleTreatAlert && (
@@ -186,95 +242,189 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
              </div>
           )}
 
-          {/* Short Description Rendering */}
-          <div className="text-gray-600 leading-snug mb-6 text-xs lg:text-sm font-light">
-            {product.description ? (
-              product.description.split('\n').map((line: string, i: number) => {
-                const parts = line.split('**');
-                return (
-                  <div key={i} className={line.trim() ? "mb-1.5 flex items-start" : "mb-1.5"}>
-                    <p className="leading-snug">
-                      {parts.map((segment, j) => {
-                        if (j % 2 !== 0) {
-                          return <strong key={j} className="font-semibold text-gray-900">{segment}</strong>;
-                        }
-                        return <span key={j}>{segment}</span>;
-                      })}
-                    </p>
-                  </div>
-                );
-              })
-            ) : (
-              <p>Indulge in the calming aura of our hand-poured artisan candles. Crafted thoughtfully with premium soy wax and infused with rich botanical fragrances to elevate your space and soothe your mind.</p>
-            )}
-          </div>
 
 
-          {/* Icon Badges */}
-          <div className="flex flex-wrap gap-2 mb-8">
-             <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50/50 border border-amber-100 rounded-full text-amber-900 text-[9px] font-bold shadow-sm uppercase tracking-wider">
-                <Leaf className="w-3.5 h-3.5 text-emerald-600" />
-                100% Pure Soy
+
+           {/* Template Specific UI Elements */}
+           {template === 'apparel' && (
+             <div className="mb-8 space-y-6">
+               {/* Size Selection */}
+               <div>
+                 <div className="flex justify-between items-center mb-3">
+                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-900">Select Size</label>
+                   <button 
+                     type="button"
+                     onClick={() => setShowSizeChart(true)}
+                     className="text-[10px] font-bold text-amber-600 uppercase border-b border-amber-600/30 flex items-center gap-1 hover:text-amber-700 transition-colors"
+                   >
+                     <Ruler className="w-3 h-3" /> Size Guide
+                   </button>
+                 </div>
+                 <div className="flex flex-wrap gap-2">
+                   {availableSizesList.map((size: string) => (
+                     <button
+                       key={size}
+                       onClick={() => setSelectedSize(size)}
+                       className={`h-12 min-w-[3rem] px-3 flex items-center justify-center rounded-xl border-2 transition-all font-bold text-sm ${
+                         selectedSize === size 
+                           ? 'border-gray-900 bg-gray-900 text-white shadow-lg' 
+                           : 'border-gray-100 text-gray-600 hover:border-gray-300'
+                       }`}
+                     >
+                       {size}
+                     </button>
+                   ))}
+                 </div>
+               </div>
+
+               {/* Color Swatches */}
+               {availableColors.length > 0 && (
+                 <div>
+                    <label className="block text-[10px] font-black uppercase tracking-widest text-gray-900 mb-3">Available Colors</label>
+                    <div className="flex gap-3">
+                      {availableColors.map((color: string, i: number) => (
+                        <button 
+                          key={i}
+                          onClick={() => setSelectedColor(color)}
+                          className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColor === color ? 'border-amber-500 scale-110 shadow-md' : 'border-gray-100 shadow-sm'}`}
+                          style={{ backgroundColor: color }}
+                          title={color}
+                        />
+                      ))}
+                    </div>
+                 </div>
+               )}
              </div>
-             <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-slate-800 text-[9px] font-bold shadow-sm uppercase tracking-wider">
-                <Info className="w-3.5 h-3.5 text-blue-600" />
-                Handmade in India
+           )}
+
+           {template === 'footwear' && availableSizesList.length > 0 && (
+              <div className="mb-8 space-y-6">
+               {/* Size Selection */}
+               <div>
+                 <div className="flex justify-between items-center mb-3">
+                   <label className="text-[10px] font-black uppercase tracking-widest text-gray-900">Select Size</label>
+                 </div>
+                 <div className="flex flex-wrap gap-2">
+                   {availableSizesList.map((size: string) => (
+                     <button
+                       key={size}
+                       onClick={() => setSelectedSize(size)}
+                       className={`h-12 min-w-[3rem] px-3 flex items-center justify-center rounded-xl border-2 transition-all font-bold text-sm ${
+                         selectedSize === size 
+                           ? 'border-gray-900 bg-gray-900 text-white shadow-lg' 
+                           : 'border-gray-100 text-gray-600 hover:border-gray-300'
+                       }`}
+                     >
+                       {size}
+                     </button>
+                   ))}
+                 </div>
+               </div>
+              </div>
+           )}
+
+           {template === 'accessories' && availableColors.length > 0 && (
+              <div className="mb-8">
+                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-900 mb-3">Select Color</label>
+                 <div className="flex gap-3">
+                   {availableColors.map((color: string, i: number) => (
+                     <button 
+                       key={i}
+                       onClick={() => setSelectedColor(color)}
+                       className={`w-8 h-8 rounded-full border-2 transition-all ${selectedColor === color ? 'border-amber-500 scale-110 shadow-md' : 'border-gray-100 shadow-sm'}`}
+                       style={{ backgroundColor: color }}
+                       title={color}
+                     />
+                   ))}
+                 </div>
+              </div>
+           )}
+
+           {template === 'candles' && (
+             <div className="flex flex-wrap gap-2 mb-8">
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-amber-50/50 border border-amber-100 rounded-full text-amber-900 text-[9px] font-bold shadow-sm uppercase tracking-wider">
+                   <Leaf className="w-3.5 h-3.5 text-emerald-600" />
+                   100% Pure Soy
+                </div>
+                <div className="flex items-center gap-2 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-full text-slate-800 text-[9px] font-bold shadow-sm uppercase tracking-wider">
+                   <Info className="w-3.5 h-3.5 text-blue-600" />
+                   Handmade in India
+                </div>
              </div>
-          </div>
+           )}
 
           {/* Quantity & Actions (Desktop) - Hidden on mobile, sticky below */}
           <div className="hidden md:block mb-8">
             <AddToCartButton 
               product={{
-                id: product.id,
-                title: product.title,
+                id: product.id + (selectedSize ? `-${selectedSize}` : "") + (selectedColor ? `-${selectedColor.replace('#', '')}` : ""),
+                title: product.title + ((template === 'apparel' || template === 'footwear') ? ` (${selectedSize})` : "") + (selectedColor ? ` - ${selectedColor}` : ""),
                 price: finalPrice,
                 image: mainImage,
                 stock: product.stock,
               }}
             />
           </div>
-
-          {/* Features badge buttons (Delivery / Quality) */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
-            <div className="flex items-center gap-3 p-3 rounded-sm bg-orange-50/50 text-orange-900 border border-orange-100/30">
-              <Truck className="w-5 h-5 text-orange-600" />
-              <div>
-                <p className="font-bold text-[7px] uppercase tracking-widest text-orange-800/80">Delivery Estimate</p>
-                <p className="text-[9px] text-orange-700/70 font-medium">4 to 7 Business Days</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 p-3 rounded-sm bg-emerald-50/50 text-emerald-900 border border-emerald-100/30">
-              <ShieldCheck className="w-5 h-5 text-emerald-600" />
-              <div>
-                <p className="font-bold text-[7px] uppercase tracking-widest text-emerald-800/80">Quality Promise</p>
-                <p className="text-[9px] text-emerald-700/70 font-medium">Hassle-Free Returns</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Product Specifics Table */}
-          <div className="mb-10 bg-gray-50/30 border border-gray-100 rounded-sm p-4 overflow-hidden">
-            <div className="flex items-center gap-2 mb-4 border-b border-gray-100 pb-3">
-               <div className="w-1 h-4 bg-gray-900 rounded-full" />
-               <h3 className="text-[8px] uppercase tracking-[0.2em] font-black text-gray-900">Product Specifics</h3>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
-              {Object.entries(specs).map(([key, val]) => (
-                <div key={key} className="flex justify-between items-center text-[9px] py-1 border-b border-gray-50/50 last:border-0 sm:even:border-b sm:nth-last-2:border-0">
-                  <span className="text-gray-400 font-bold uppercase tracking-wider">{key}</span>
-                  <span className="text-gray-900 font-black text-right ml-4">{String(val)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
         </section>
       </main>
 
-      {/* Full Width Tabs Section */}
-      <section className="max-w-7xl mx-auto px-5 md:px-8 pb-12">
-        <div className="border-t border-gray-100 pt-12 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-          <ProductTabs product={product} specs={specs} />
+      {/* Full Width Info Section */}
+      <section className="max-w-7xl mx-auto px-5 md:px-8 mb-12">
+        {/* Short Description Rendering */}
+        <div className="text-gray-600 leading-snug mb-10 text-xs lg:text-sm font-light">
+          {product.description ? (
+            product.description.split('\n').map((line: string, i: number) => {
+              if (!line.trim()) return <div key={i} className="mb-1.5" />;
+              return (
+                <div key={i} className="mb-1.5 flex items-start text-[14px]">
+                  <div 
+                    className="leading-snug html-content-area"
+                    dangerouslySetInnerHTML={{ __html: line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }}
+                  />
+                </div>
+              );
+            })
+          ) : (
+            <p>Indulge in the calming aura of our hand-poured artisan candles. Crafted thoughtfully with premium soy wax and infused with rich botanical fragrances to elevate your space and soothe your mind.</p>
+          )}
+        </div>
+
+        {/* Features badge buttons (Delivery / Quality) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-10">
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-orange-50/50 text-orange-900 border border-orange-100/30 shadow-sm">
+            <Truck className="w-6 h-6 text-orange-600" />
+            <div>
+              <p className="font-bold text-[10px] uppercase tracking-widest text-orange-800/80 mb-0.5">Delivery Estimate</p>
+              <p className="text-xs text-orange-700/70 font-bold">{dispatchTime}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4 p-4 rounded-xl bg-emerald-50/50 text-emerald-900 border border-emerald-100/30 shadow-sm">
+            <ShieldCheck className="w-6 h-6 text-emerald-600" />
+            <div>
+              <p className="font-bold text-[10px] uppercase tracking-widest text-emerald-800/80 mb-0.5">Quality Promise</p>
+              <p className="text-xs text-emerald-700/70 font-bold">{returnPolicyNote}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Product Specifics Table */}
+        <div className="mb-12 bg-gray-50/30 border border-gray-100 rounded-2xl p-6 md:p-8 overflow-hidden">
+          <div className="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+             <div className="w-1.5 h-6 bg-gray-900 rounded-full" />
+             <h3 className="text-[10px] uppercase tracking-[0.2em] font-black text-gray-900 font-serif">Product Specifications</h3>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-5">
+            {Object.entries(specs).map(([key, val]) => (
+              <div key={key} className="flex justify-between items-center text-[11px] py-2.5 border-b border-gray-100/50 last:border-0">
+                <span className="text-gray-400 font-bold uppercase tracking-widest">{key}</span>
+                <span className="text-gray-900 font-black text-right ml-4">{String(val)}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000">
+          <ProductAccordion product={product} />
         </div>
       </section>
 
@@ -319,8 +469,8 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
          <button 
            onClick={() => {
              addToCart({
-               id: product.id,
-               title: product.title,
+               id: product.id + (selectedSize ? `-${selectedSize}` : "") + (selectedColor ? `-${selectedColor.replace('#', '')}` : ""),
+               title: product.title + ((template === 'apparel' || template === 'footwear') ? ` (${selectedSize})` : "") + (selectedColor ? ` - ${selectedColor}` : ""),
                price: finalPrice,
                quantity: 1,
                image: mainImage,
@@ -332,121 +482,144 @@ export default function ProductClient({ product, relatedProducts = [] }: { produ
             <ShoppingBag className="w-5 h-5" /> Buy Now
          </button>
       </div>
+      {/* Size Chart Modal */}
+      {showSizeChart && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSizeChart(false)} />
+          <div className="relative bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+              <div className="flex items-center gap-3">
+                <div className="bg-amber-100 p-2 rounded-xl text-amber-600">
+                  <Ruler className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black uppercase tracking-tighter text-gray-900">Standard Size Guide</h3>
+                  <p className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">All measurements are in inches</p>
+                </div>
+              </div>
+              <button onClick={() => setShowSizeChart(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b-2 border-gray-900">
+                    <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-gray-400">Size</th>
+                    <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Chest</th>
+                    <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Waist</th>
+                    <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Shoulder</th>
+                    <th className="py-3 px-4 text-[10px] font-black uppercase tracking-widest text-gray-500">Length</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {[
+                    { s: 'S', c: '38', w: '32', sh: '17', l: '27' },
+                    { s: 'M', c: '40', w: '34', sh: '18', l: '28' },
+                    { s: 'L', c: '42', w: '36', sh: '19', l: '29' },
+                    { s: 'XL', c: '44', w: '38', sh: '20', l: '30' },
+                    { s: 'XXL', c: '46', w: '40', sh: '21', l: '31' },
+                  ].map((row) => (
+                    <tr key={row.s} className={selectedSize === row.s ? 'bg-amber-50/50' : ''}>
+                      <td className="py-4 px-4 font-black text-gray-900">{row.s}</td>
+                      <td className="py-4 px-4 font-bold text-gray-600">{row.c}"</td>
+                      <td className="py-4 px-4 font-bold text-gray-600">{row.w}"</td>
+                      <td className="py-4 px-4 font-bold text-gray-600">{row.sh}"</td>
+                      <td className="py-4 px-4 font-bold text-gray-600">{row.l}"</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              <div className="mt-8 bg-amber-50 rounded-2xl p-4 border border-amber-100">
+                <p className="text-xs text-amber-800 font-medium leading-relaxed">
+                  <strong>Pro Tip:</strong> For an oversized streetwear look, we recommend going one size up. If you prefer a regular fit, stick to your standard size.
+                </p>
+              </div>
+            </div>
+            
+            <div className="p-6 bg-gray-50 border-t border-gray-100 flex justify-end">
+              <button 
+                onClick={() => setShowSizeChart(false)}
+                className="bg-gray-900 text-white px-8 py-3 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-black transition-all"
+              >
+                Got it
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
 
-function ProductTabs({ product, specs }: { product: any, specs: any }) {
-  const [activeTab, setActiveTab] = useState('Details');
+function ProductAccordion({ product }: { product: any }) {
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
   
-  const tabs = ['Details', 'Terms', 'Returns', 'Guarantee'];
-  
-  const getDetailByLabel = (labelPattern: string) => {
-    return product.details?.find((d: any) => 
-      d.label.toLowerCase().includes(labelPattern.toLowerCase())
-    )?.value;
-  };
+  const details = product.details || [];
 
-  const renderTabContent = () => {
-    switch(activeTab) {
-      case 'Details':
-        // Only show items from "Content Sections (Tabs)" that are NOT Return, Terms, or Guarantee
-        const tabKeywords = ['terms', 'return', 'guarantee'];
-        const additionalDetails = product.details?.filter((d: any) => 
-          !tabKeywords.some(kw => d.label.toLowerCase().includes(kw))
-        ) || [];
-
-        return (
-          <div className="animate-in fade-in duration-300">
-            {additionalDetails.length > 0 ? (
-              <div className="grid grid-cols-1 gap-8">
-                {additionalDetails.map((detail: any) => (
-                  <div key={detail.id} className="border-b border-gray-100 pb-8 last:border-0">
-                    <h4 className="text-[8px] uppercase tracking-[0.2em] font-black text-gray-400 mb-4">{detail.label}</h4>
-                    <div className="text-gray-900 text-[12px] font-bold leading-[1.8] whitespace-pre-line max-w-4xl">
-                      {detail.value}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-gray-500 italic">No additional details available.</p>
-            )}
-          </div>
-        );
-      case 'Terms':
-        const termsContent = getDetailByLabel('Terms');
-        return (
-          <div className="text-[11px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
-            {termsContent ? (
-              <div className="whitespace-pre-line bg-gray-50/50 p-4 rounded-sm border border-gray-100">{termsContent}</div>
-            ) : (
-              <ul className="space-y-3 list-disc pl-4">
-                <li>Prices are inclusive of all taxes.</li>
-                <li>Offers cannot be clubbed with other coupon codes unless explicitly mentioned.</li>
-                <li>Estimated delivery time is 4-7 business days depending on your location.</li>
-                <li>All candles are handcrafted, hence minor variations in texture or color may occur.</li>
-              </ul>
-            )}
-          </div>
-        );
-      case 'Returns':
-        const returnsContent = getDetailByLabel('Return');
-        return (
-          <div className="text-[11px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
-            {returnsContent ? (
-              <div className="whitespace-pre-line bg-gray-50/50 p-4 rounded-sm border border-gray-100">{returnsContent}</div>
-            ) : (
-              <ul className="space-y-3 list-disc pl-4">
-                <li>We offer a 7-day easy return policy for damaged or defective products.</li>
-                <li>To be eligible for a return, the item must be unused and in the same condition that you received it.</li>
-                <li>Please capture an unboxing video of the product for easier processing of damage claims.</li>
-                <li>Refunds are processed within 5-7 working days after quality check.</li>
-              </ul>
-            )}
-          </div>
-        );
-      case 'Guarantee':
-        const guaranteeContent = getDetailByLabel('Guarantee');
-        return (
-          <div className="text-[11px] text-gray-600 leading-relaxed font-light animate-in fade-in duration-300">
-            {guaranteeContent ? (
-              <div className="whitespace-pre-line bg-gray-50/50 p-4 rounded-sm border border-gray-100">{guaranteeContent}</div>
-            ) : (
-              <div className="space-y-4">
-                <p className="font-bold text-gray-900 mb-1">Premium Quality Assurance</p>
-                <p>We use 100% pure soy wax and lead-free cotton wicks for a clean, non-toxic burn. Our fragrances are IFRA certified and safe for indoor use.</p>
-                <p className="font-bold text-gray-900 mt-4 mb-1">Safe Transit Guarantee</p>
-                <p>If your candle reaches you in a broken or unusable condition, we will ship a replacement immediately at no extra cost.</p>
-              </div>
-            )}
-          </div>
-        );
-      default:
-        return null;
+  const renderDetailValue = (text: string) => {
+    if (!text) return null;
+    
+    // Check if it's a Q&A block
+    if (typeof text === 'string' && text.includes("Q:") && text.includes("A:")) {
+      const parts = text.split(/(?=Q:)/).filter(p => p.trim() !== '');
+      return (
+        <div className="space-y-4">
+          {parts.map((part, idx) => {
+            if (part.startsWith('Q:')) {
+              const [q, a] = part.split(/A:/);
+              return (
+                <div key={idx} className="bg-gray-50/50 p-5 rounded-2xl border border-gray-100/50">
+                   <h5 className="font-black text-gray-900 text-[11px] mb-2 uppercase tracking-tight leading-snug">{q.replace('Q:', '').trim()}</h5>
+                   {a && <p className="text-gray-600 text-xs leading-relaxed font-medium">{a.trim()}</p>}
+                </div>
+              );
+            }
+            return <div key={idx} className="whitespace-pre-line text-xs font-medium leading-[1.8] text-gray-800">{part}</div>;
+          })}
+        </div>
+      );
     }
+
+    return (
+      <div className="text-gray-600 text-[13px] font-medium leading-[1.8] whitespace-pre-line max-w-4xl">
+        {String(text)}
+      </div>
+    );
   };
+
+  if (details.length === 0) return null;
 
   return (
-    <div className="w-full">
-      <div className="flex flex-wrap gap-4 md:gap-10 border-b border-gray-100 mb-8 overflow-x-auto hide-scrollbar">
-        {tabs.map(tab => (
+    <div className="w-full divide-y divide-gray-100 border-t border-gray-100 mt-8">
+      {details.map((detail: any, idx: number) => (
+        <div key={detail.id || idx} className="group overflow-hidden">
           <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`pb-4 text-sm font-bold uppercase tracking-widest transition-all relative ${activeTab === tab ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
+            onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
+            className="w-full py-6 flex items-center justify-between text-left hover:bg-gray-50/30 transition-all rounded-xl px-2"
           >
-            {tab}
-            {activeTab === tab && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900 animate-in slide-in-from-left-2" />
-            )}
+            <span className={`text-[13px] md:text-sm font-black uppercase tracking-tight transition-colors ${openIndex === idx ? 'text-gray-900' : 'text-gray-500 group-hover:text-gray-900'}`}>
+              {detail.label}
+            </span>
+            <div className={`p-1 rounded-full transition-all duration-300 ${openIndex === idx ? 'bg-gray-100 rotate-180' : 'bg-transparent'}`}>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-colors ${openIndex === idx ? 'text-gray-900' : ''}`} />
+            </div>
           </button>
-        ))}
-      </div>
-      
-      <div className="min-h-[200px]">
-        {renderTabContent()}
-      </div>
+          
+          <div 
+            className={`transition-all duration-300 ease-in-out ${
+              openIndex === idx 
+                ? 'max-h-[2000px] opacity-100 pb-8 px-2' 
+                : 'max-h-0 opacity-0 pointer-events-none'
+            }`}
+          >
+            <div className="animate-in fade-in slide-in-from-top-1 duration-500">
+              {renderDetailValue(detail.value)}
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

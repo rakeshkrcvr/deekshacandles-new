@@ -34,6 +34,7 @@ export async function POST(req: Request) {
         bankName: body.bankName || null,
         usageLimit: body.usageLimit ? parseInt(body.usageLimit) : null,
         expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
+        productIds: body.productIds || [],
         active: body.active !== undefined ? body.active : true
       }
     });
@@ -66,6 +67,7 @@ export async function PUT(req: Request) {
         getQuantity: updateData.getQuantity ? parseInt(updateData.getQuantity) : null,
         usageLimit: updateData.usageLimit ? parseInt(updateData.usageLimit) : null,
         expiresAt: updateData.expiresAt ? new Date(updateData.expiresAt) : null,
+        productIds: updateData.productIds || undefined,
       }
     });
 

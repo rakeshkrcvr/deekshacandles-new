@@ -14,6 +14,9 @@ interface AppliedCoupon {
   code: string;
   discountType: string;
   discountValue: number;
+  buyQuantity?: number;
+  getQuantity?: number;
+  maxDiscount?: number;
 }
 
 interface CartState {

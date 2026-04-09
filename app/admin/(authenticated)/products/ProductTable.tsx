@@ -5,9 +5,9 @@ import Link from "next/link";
 import { 
   Plus, Search, Edit3, Trash2, Check, X, Save, Edit, 
   ChevronDown, Filter, Download, MoreHorizontal, AlertTriangle,
-  Trash, ArrowUpDown, ExternalLink
+  Trash, ArrowUpDown, ExternalLink, Copy
 } from "lucide-react";
-import { deleteProduct } from "@/app/admin/actions";
+import { deleteProduct, duplicateProduct } from "@/app/admin/actions";
 import { updateProductsBatch, deleteProductsBatch } from "./importActions";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -50,6 +50,7 @@ export default function ProductTable({
     batch: false
   });
 
+  const [isDuplicating, setIsDuplicating] = useState<string | null>(null);
   const router = useRouter();
 
   // --- Filtering & Utility ---
@@ -125,6 +126,17 @@ export default function ProductTable({
     } else if (deleteModal.id) {
         await deleteProduct(deleteModal.id);
         router.refresh();
+    }
+  };
+  const handleDuplicate = async (id: string) => {
+    setIsDuplicating(id);
+    try {
+      await duplicateProduct(id);
+      router.refresh();
+    } catch (e) {
+      alert("Error duplicating product");
+    } finally {
+      setIsDuplicating(null);
     }
   };
 
@@ -373,6 +385,14 @@ export default function ProductTable({
                                 className="p-1.5 text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
                             >
                                 <ExternalLink className="w-3.5 h-3.5" />
+                            </button>
+                            <button 
+                                onClick={() => handleDuplicate(p.id)}
+                                disabled={isDuplicating === p.id}
+                                title="Duplicate Product"
+                                className="p-1.5 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors disabled:opacity-50"
+                            >
+                                {isDuplicating === p.id ? <div className="w-3.5 h-3.5 border-2 border-blue-500/30 border-t-blue-500 rounded-full animate-spin" /> : <Copy className="w-3.5 h-3.5" />}
                             </button>
                             <Link 
                                 href={`/admin/products/${p.id}/edit`} 

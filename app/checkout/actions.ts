@@ -42,7 +42,8 @@ export async function verifyAndCompleteOrder(
   paymentData: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string } | null,
   checkoutData: any, // Renamed from formData and changed type slightly for cleaner pass
   cartItems: {id: string, price: number, quantity: number, title: string}[],
-  affiliateId?: string | null
+  affiliateId?: string | null,
+  totalAmount?: number
 ) {
   const { firstName, lastName, email, phone, address: baseAddress, apartment, city, state, pincode } = checkoutData;
   const name = firstName ? `${firstName} ${lastName}`.trim() : lastName;
@@ -65,7 +66,7 @@ export async function verifyAndCompleteOrder(
     paymentId = paymentData.razorpay_payment_id;
   }
 
-  const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+  const total = totalAmount ?? cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0);
 
   // Use a transaction
   const order = await prisma.$transaction(async (tx: any) => {
@@ -83,7 +84,7 @@ export async function verifyAndCompleteOrder(
         affiliateId: affiliateId || null,
         items: {
           create: cartItems.map(item => ({
-            productId: item.id,
+            productId: item.id.split('-')[0],
             price: item.price,
             quantity: item.quantity,
           }))
@@ -133,7 +134,7 @@ export async function verifyAndCompleteOrder(
 
     for (const item of cartItems) {
       await tx.product.update({
-        where: { id: item.id },
+        where: { id: item.id.split('-')[0] },
         data: { stock: { decrement: item.quantity } }
       });
     }
@@ -172,7 +173,7 @@ export async function verifyAndCompleteOrder(
           shipping_is_billing: true,
           order_items: cartItems.map(item => ({
             name: item.title,
-            sku: item.id,
+            sku: item.id.split('-')[0],
             units: item.quantity,
             selling_price: item.price
           })),

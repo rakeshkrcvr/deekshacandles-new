@@ -8,6 +8,7 @@ import {
 import Link from "next/link";
 import { saveProductAction } from "./actions";
 import CategoryMultiSelect from "@/components/admin/CategoryMultiSelect";
+import { PRODUCT_TEMPLATES, ProductTemplate } from "@/lib/product-templates";
 
 export default function ProductForm({ categories, initialData, products = [] }: { categories: any[], initialData?: any, products?: any[] }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,6 +29,10 @@ export default function ProductForm({ categories, initialData, products = [] }: 
     })) || []
   );
   
+  const [selectedTemplate, setSelectedTemplate] = useState<ProductTemplate>(
+    (initialData?.specifications && (initialData.specifications as any)._template) || 'candles'
+  );
+
   const [imageInput, setImageInput] = useState("");
 
   const [badges, setBadges] = useState<string[]>(initialData?.badges || []);
@@ -53,6 +58,20 @@ export default function ProductForm({ categories, initialData, products = [] }: 
   });
 
   const parsedSpecs = initialData?.specifications ? (typeof initialData.specifications === 'string' ? JSON.parse(initialData.specifications) : initialData.specifications) : {};
+
+  const [sliderOffers, setSliderOffers] = useState<{ id: string, title: string, code: string }[]>(
+    parsedSpecs._sliderOffers || []
+  );
+
+  const addSliderOffer = () => {
+    setSliderOffers(prev => [...prev, { id: Date.now().toString(), title: "", code: "" }]);
+  };
+  const removeSliderOffer = (id: string) => {
+    setSliderOffers(prev => prev.filter(o => o.id !== id));
+  };
+  const updateSliderOffer = (id: string, field: 'title' | 'code', value: string) => {
+    setSliderOffers(prev => prev.map(o => o.id === id ? { ...o, [field]: value } : o));
+  };
 
   // ... (keep middle utility functions mostly as they are)
   const handleAddImage = () => {
@@ -167,20 +186,23 @@ export default function ProductForm({ categories, initialData, products = [] }: 
       
       formData.append("badges", JSON.stringify(badges));
       
-      const netWeight = formData.get("netWeight");
-      const burnTime = formData.get("burnTime");
-      const material = formData.get("material");
-      const fragrance = formData.get("fragrance");
-      const jar = formData.get("jar");
-      const specs = {
-        ...(netWeight && { "Net Weight": netWeight }),
-        ...(burnTime && { "Burn Time": burnTime }),
-        ...(material && { "Wax Material": material }),
-        ...(fragrance && { "Fragrance Notes": fragrance }),
-        ...(jar && { "Jar Material & Dimensions": jar }),
+      const specs: any = {
+        _template: selectedTemplate,
       };
+
+      // Collect fields based on selected template
+      PRODUCT_TEMPLATES[selectedTemplate].fields.forEach(field => {
+        const value = formData.get(`spec_${field.name}`);
+        if (value) {
+          specs[field.label] = value;
+        }
+      });
       
-      if (Object.keys(specs).length > 0) {
+      if (sliderOffers.length > 0) {
+        specs._sliderOffers = sliderOffers;
+      }
+      
+      if (Object.keys(specs).length > 1 || specs._sliderOffers?.length > 0) {
         formData.append("specifications", JSON.stringify(specs));
       }
       
@@ -392,34 +414,37 @@ export default function ProductForm({ categories, initialData, products = [] }: 
             </div>
           </div>
 
-          {/* 3. Product Specifics */}
+          {/* 3. Product Specifics (Template Based) */}
           <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-             <div className="flex items-center gap-2 mb-6 border-b border-gray-50 pb-4">
-              <Star className="w-5 h-5 text-amber-500" />
-              <h2 className="text-lg font-semibold text-gray-900">Product Specifics</h2>
+             <div className="flex items-center justify-between mb-6 border-b border-gray-50 pb-4">
+              <div className="flex items-center gap-2">
+                <Star className="w-5 h-5 text-amber-500" />
+                <h2 className="text-lg font-semibold text-gray-900">Product Specifics</h2>
+              </div>
+              <select 
+                value={selectedTemplate}
+                onChange={(e) => setSelectedTemplate(e.target.value as ProductTemplate)}
+                className="text-xs font-bold border-gray-200 border rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-amber-500 outline-none bg-gray-50"
+              >
+                {Object.entries(PRODUCT_TEMPLATES).map(([key, template]) => (
+                  <option key={key} value={key}>{template.label}</option>
+                ))}
+              </select>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Net Weight</label>
-                <input defaultValue={parsedSpecs["Net Weight"] || ""} name="netWeight" type="text" className="w-full border-gray-200 border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g., 350gm" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Burn Time</label>
-                <input defaultValue={parsedSpecs["Burn Time"] || ""} name="burnTime" type="text" className="w-full border-gray-200 border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g., 60 Hours" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Wax Material</label>
-                <input defaultValue={parsedSpecs["Wax Material"] || ""} name="material" type="text" className="w-full border-gray-200 border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g., Soy + Gel Wax" />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Fragrance Notes</label>
-                <input defaultValue={parsedSpecs["Fragrance Notes"] || ""} name="fragrance" type="text" className="w-full border-gray-200 border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g., Coffee, Oud, Vanilla" />
-              </div>
-              <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-1.5">Jar Material & Dimensions</label>
-                <input defaultValue={parsedSpecs["Jar Material & Dimensions"] || ""} name="jar" type="text" className="w-full border-gray-200 border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" placeholder="e.g., Glass Jar - 4x3 Inches" />
-              </div>
+              {PRODUCT_TEMPLATES[selectedTemplate].fields.map((field) => (
+                <div key={field.name} className={field.name === 'sizeChart' || field.name === 'fragrance' ? 'sm:col-span-2' : ''}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5">{field.label}</label>
+                  <input 
+                    defaultValue={parsedSpecs[field.label] || ""} 
+                    name={`spec_${field.name}`} 
+                    type="text" 
+                    className="w-full border-gray-200 border rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-amber-500 outline-none" 
+                    placeholder={field.placeholder} 
+                  />
+                </div>
+              ))}
             </div>
           </div>
 
@@ -551,6 +576,42 @@ export default function ProductForm({ categories, initialData, products = [] }: 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1.5 text-red-600">Triple Treat Alert Area</label>
                 <textarea defaultValue={initialData?.tripleTreatAlert} name="tripleTreatAlert" rows={2} className="w-full border-red-200 border rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-red-500 outline-none bg-red-50/30 placeholder:text-red-300" placeholder="e.g., Get 1 large + 2 mini candles free..."></textarea>
+              </div>
+
+              <div className="pt-5 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700">Slider Offers (Coupons)</label>
+                    <p className="text-[10px] text-gray-500">Add horizontal scrolling offers on the product page.</p>
+                  </div>
+                  <button type="button" onClick={addSliderOffer} className="text-xs font-bold text-amber-600 bg-amber-50 px-3 py-2 rounded-lg flex items-center gap-1 hover:bg-amber-100 transition-colors">
+                    <Plus className="w-3 h-3 flex-shrink-0" /> Add
+                  </button>
+                </div>
+                
+                <div className="space-y-3">
+                  {sliderOffers.map((offer, index) => (
+                    <div key={offer.id} className="flex flex-col gap-3 p-4 bg-gray-50 border border-gray-100 rounded-xl relative group">
+                      <button type="button" onClick={() => removeSliderOffer(offer.id)} className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-red-500 hover:bg-white rounded-md transition-colors bg-gray-100">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                      <div className="pr-6">
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 block">Offer Title</label>
+                        <input value={offer.title} onChange={e => updateSliderOffer(offer.id, 'title', e.target.value)} type="text" className="w-full border-gray-200 border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none transition-all placeholder:text-gray-400" placeholder="e.g., Enjoy 10% OFF On First Order" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-1.5 block">Coupon Code</label>
+                        <input value={offer.code} onChange={e => updateSliderOffer(offer.id, 'code', e.target.value)} type="text" className="w-full border-gray-200 border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-amber-500 outline-none uppercase font-mono tracking-wider placeholder:text-gray-400 placeholder:lowercase placeholder:tracking-normal" placeholder="e.g., FIRSTBUY" />
+                      </div>
+                    </div>
+                  ))}
+                  {sliderOffers.length === 0 && (
+                    <div className="text-center py-6 border border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                      <p className="text-xs text-gray-400">No slider offers added yet.</p>
+                      <button type="button" onClick={addSliderOffer} className="text-xs font-medium text-amber-600 mt-2 hover:underline">Click to add your first offer</button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

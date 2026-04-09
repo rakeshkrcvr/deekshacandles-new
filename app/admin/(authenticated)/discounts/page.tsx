@@ -4,9 +4,15 @@ import prisma from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function DiscountsPage() {
-  const discounts = await prisma.coupon.findMany({
-    orderBy: { createdAt: 'desc' }
-  });
+  const [discounts, products] = await Promise.all([
+    prisma.coupon.findMany({
+      orderBy: { createdAt: 'desc' }
+    }),
+    prisma.product.findMany({
+      select: { id: true, title: true, slug: true, imageUrls: true },
+      orderBy: { title: 'asc' }
+    })
+  ]);
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -17,7 +23,7 @@ export default async function DiscountsPage() {
          </div>
       </div>
       
-      <DiscountManager initialDiscounts={discounts} />
+      <DiscountManager initialDiscounts={discounts} allProducts={products} />
     </div>
   );
 }

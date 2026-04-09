@@ -216,6 +216,7 @@ model Coupon {
   usedCount       Int      @default(0)
   
   active          Boolean  @default(true)
+  productIds      String[] @default([])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }

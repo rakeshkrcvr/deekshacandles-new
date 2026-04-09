@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { code, cartTotal } = await req.json();
+    const { code, cartTotal, items = [] } = await req.json();
 
     if (!code) {
       return NextResponse.json({ error: "Coupon code is required" }, { status: 400 });
@@ -50,6 +50,24 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Coupon usage limit reached" }, { status: 400 });
     }
 
+    // Product Restriction Check
+    let eligibleSubtotal = cartTotal;
+    const hasProductRestrictions = coupon.productIds && coupon.productIds.length > 0;
+    
+    if (hasProductRestrictions) {
+      // Filter items that are in the coupon.productIds list
+      const eligibleItems = items.filter((item: any) => coupon.productIds.includes(item.id));
+      
+      if (eligibleItems.length === 0) {
+        return NextResponse.json({ 
+          error: "This coupon is not applicable to any items in your cart." 
+        }, { status: 400 });
+      }
+      
+      // Calculate subtotal ONLY for eligible products
+      eligibleSubtotal = eligibleItems.reduce((acc: number, item: any) => acc + (item.price * item.quantity), 0);
+    }
+
     if (coupon.minPurchase && cartTotal < coupon.minPurchase) {
       return NextResponse.json(
         { error: `Minimum purchase of ₹${coupon.minPurchase} required` },
@@ -59,12 +77,17 @@ export async function POST(req: Request) {
 
     let discountAmount = 0;
     if (coupon.discountType === "PERCENTAGE") {
-      discountAmount = (cartTotal * (coupon.discountValue || 0)) / 100;
+      // Apply percentage ONLY on eligible subtotal
+      discountAmount = (eligibleSubtotal * (coupon.discountValue || 0)) / 100;
       if (coupon.maxDiscount && discountAmount > coupon.maxDiscount) {
         discountAmount = coupon.maxDiscount;
       }
     } else if (coupon.discountType === "FIXED_AMOUNT") {
       discountAmount = coupon.discountValue || 0;
+      // Ensure discount doesn't exceed eligible subtotal
+      if (discountAmount > eligibleSubtotal) {
+        discountAmount = eligibleSubtotal;
+      }
     }
 
     return NextResponse.json({
@@ -74,6 +97,9 @@ export async function POST(req: Request) {
         code: coupon.code,
         discountType: coupon.discountType,
         discountValue: coupon.discountValue,
+        buyQuantity: coupon.buyQuantity,
+        getQuantity: coupon.getQuantity,
+        maxDiscount: coupon.maxDiscount,
         discountAmount,
       },
     });
