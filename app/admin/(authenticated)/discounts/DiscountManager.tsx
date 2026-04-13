@@ -160,6 +160,29 @@ export default function DiscountManager({ initialDiscounts, allProducts = [], al
                        </p>
                      )}
                      {(d.discountType === 'BOGO') && <p className="text-xs text-emerald-600 mt-1 font-medium bg-emerald-50 px-2 py-0.5 rounded-md inline-block">Buy {d.buyQuantity} Get {d.getQuantity}</p>}
+                     
+                     {/* Scope Info */}
+                     <div className="flex flex-wrap gap-1.5 mt-2.5">
+                        {(!d.categoryIds?.length && !d.productIds?.length) ? (
+                           <span className="text-[9px] text-gray-400 font-bold uppercase tracking-widest bg-gray-50 px-2 py-0.5 rounded border border-gray-100">Across Store</span>
+                        ) : (
+                           <>
+                              {d.categoryIds?.map((id: string) => {
+                                 const cat = allCategories.find(c => c.id === id);
+                                 return cat && (
+                                    <span key={id} className="text-[9px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded-md font-bold uppercase tracking-tighter border border-blue-100 flex items-center gap-1 shadow-sm">
+                                       <Landmark className="w-2.5 h-2.5" /> {cat.name}
+                                    </span>
+                                 );
+                              })}
+                              {d.productIds?.length > 0 && (
+                                <span className="text-[9px] bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-md font-bold uppercase tracking-tighter border border-emerald-100 flex items-center gap-1 shadow-sm">
+                                   <Tag className="w-2.5 h-2.5" /> {d.productIds.length} Products
+                                </span>
+                              )}
+                           </>
+                        )}
+                     </div>
                   </td>
                   <td className="py-4">
                      <button onClick={() => handleToggleActive(d.id, d.active)} className={`w-12 h-6 rounded-full relative transition-colors ${d.active ? 'bg-amber-500' : 'bg-gray-200'}`}>
