@@ -35,6 +35,7 @@ export async function POST(req: Request) {
         usageLimit: body.usageLimit ? parseInt(body.usageLimit) : null,
         expiresAt: body.expiresAt ? new Date(body.expiresAt) : null,
         productIds: body.productIds || [],
+        categoryIds: body.categoryIds || [],
         active: body.active !== undefined ? body.active : true
       }
     });
@@ -51,29 +52,36 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
   try {
     const body = await req.json();
-    const { id, ...updateData } = body;
+    const { id } = body;
 
     if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
     const updated = await prisma.coupon.update({
       where: { id },
       data: {
-        ...updateData,
-        code: updateData.code ? updateData.code.toUpperCase().replace(/\s+/g, '') : undefined,
-        discountValue: updateData.discountValue ? parseFloat(updateData.discountValue) : null,
-        minPurchase: updateData.minPurchase ? parseFloat(updateData.minPurchase) : null,
-        maxDiscount: updateData.maxDiscount ? parseFloat(updateData.maxDiscount) : null,
-        buyQuantity: updateData.buyQuantity ? parseInt(updateData.buyQuantity) : null,
-        getQuantity: updateData.getQuantity ? parseInt(updateData.getQuantity) : null,
-        usageLimit: updateData.usageLimit ? parseInt(updateData.usageLimit) : null,
-        expiresAt: updateData.expiresAt ? new Date(updateData.expiresAt) : null,
-        productIds: updateData.productIds || undefined,
+        code: body.code ? body.code.toUpperCase().replace(/\s+/g, '') : undefined,
+        discountType: body.discountType,
+        discountValue: body.discountValue !== undefined ? (body.discountValue ? parseFloat(body.discountValue) : null) : undefined,
+        description: body.description,
+        minPurchase: body.minPurchase !== undefined ? (body.minPurchase ? parseFloat(body.minPurchase) : null) : undefined,
+        maxDiscount: body.maxDiscount !== undefined ? (body.maxDiscount ? parseFloat(body.maxDiscount) : null) : undefined,
+        buyQuantity: body.buyQuantity !== undefined ? (body.buyQuantity ? parseInt(body.buyQuantity) : null) : undefined,
+        getQuantity: body.getQuantity !== undefined ? (body.getQuantity ? parseInt(body.getQuantity) : null) : undefined,
+        isBundle: body.isBundle,
+        targetCustomer: body.targetCustomer,
+        bankName: body.bankName,
+        usageLimit: body.usageLimit !== undefined ? (body.usageLimit ? parseInt(body.usageLimit) : null) : undefined,
+        expiresAt: body.expiresAt !== undefined ? (body.expiresAt ? new Date(body.expiresAt) : null) : undefined,
+        productIds: body.productIds,
+        categoryIds: body.categoryIds,
+        active: body.active
       }
     });
 
     return NextResponse.json(updated);
   } catch (error: any) {
-    return NextResponse.json({ error: 'Failed to update discount' }, { status: 500 });
+    console.error("PUT Discount Error:", error);
+    return NextResponse.json({ error: 'Failed to update discount', details: error.message }, { status: 500 });
   }
 }
 

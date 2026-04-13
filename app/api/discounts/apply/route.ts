@@ -50,13 +50,35 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Coupon usage limit reached" }, { status: 400 });
     }
 
-    // Product Restriction Check
+    // Product & Category Restriction Check
     let eligibleSubtotal = cartTotal;
     const hasProductRestrictions = coupon.productIds && coupon.productIds.length > 0;
+    const hasCategoryRestrictions = coupon.categoryIds && coupon.categoryIds.length > 0;
     
-    if (hasProductRestrictions) {
-      // Filter items that are in the coupon.productIds list
-      const eligibleItems = items.filter((item: any) => coupon.productIds.includes(item.id));
+    if (hasProductRestrictions || hasCategoryRestrictions) {
+      // If categories are restricted, we need to fetch category IDs for all items in cart
+      let cartItemsWithCategories = items;
+      if (hasCategoryRestrictions) {
+        const productData = await prisma.product.findMany({
+          where: { id: { in: items.map((item: any) => item.id) } },
+          select: { id: true, categories: { select: { id: true } } }
+        });
+        
+        cartItemsWithCategories = items.map((item: any) => {
+          const product = productData.find(p => p.id === item.id);
+          return {
+            ...item,
+            categoryIds: product?.categories.map(c => c.id) || []
+          };
+        });
+      }
+
+      // Filter items that match either specific product restriction or category restriction
+      const eligibleItems = cartItemsWithCategories.filter((item: any) => {
+        const matchesProduct = hasProductRestrictions && coupon.productIds.includes(item.id);
+        const matchesCategory = hasCategoryRestrictions && item.categoryIds?.some((cid: string) => coupon.categoryIds.includes(cid));
+        return matchesProduct || matchesCategory;
+      });
       
       if (eligibleItems.length === 0) {
         return NextResponse.json({ 

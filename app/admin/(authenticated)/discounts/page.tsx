@@ -4,13 +4,17 @@ import prisma from "@/lib/prisma";
 export const dynamic = 'force-dynamic';
 
 export default async function DiscountsPage() {
-  const [discounts, products] = await Promise.all([
+  const [discounts, products, categories] = await Promise.all([
     prisma.coupon.findMany({
       orderBy: { createdAt: 'desc' }
     }),
     prisma.product.findMany({
-      select: { id: true, title: true, slug: true, imageUrls: true },
+      select: { id: true, title: true, slug: true, imageUrls: true, categories: { select: { id: true } } },
       orderBy: { title: 'asc' }
+    }),
+    prisma.category.findMany({
+      select: { id: true, name: true, slug: true },
+      orderBy: { name: 'asc' }
     })
   ]);
 
@@ -23,7 +27,11 @@ export default async function DiscountsPage() {
          </div>
       </div>
       
-      <DiscountManager initialDiscounts={discounts} allProducts={products} />
+      <DiscountManager 
+        initialDiscounts={discounts} 
+        allProducts={products} 
+        allCategories={categories} 
+      />
     </div>
   );
 }

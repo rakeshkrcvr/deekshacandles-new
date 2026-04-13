@@ -12,12 +12,13 @@ const DISCOUNT_TYPES = [
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export default function DiscountManager({ initialDiscounts, allProducts = [] }: { initialDiscounts: any[], allProducts?: any[] }) {
+export default function DiscountManager({ initialDiscounts, allProducts = [], allCategories = [] }: { initialDiscounts: any[], allProducts?: any[], allCategories?: any[] }) {
   const [discounts, setDiscounts] = useState<any[]>(initialDiscounts || []);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [formData, setFormData] = useState<any>({ productIds: [] });
+  const [formData, setFormData] = useState<any>({ productIds: [], categoryIds: [] });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [categorySearchQuery, setCategorySearchQuery] = useState("");
 
   const handleDelete = async (id: string, code: string) => {
     if (!confirm(`Delete coupon ${code}?`)) return;
@@ -54,7 +55,8 @@ export default function DiscountManager({ initialDiscounts, allProducts = [] }: 
 
       const payload = {
         ...formData,
-        productIds: formData.productIds ? formData.productIds.filter((id: string) => id !== '_selection_mode_active_') : []
+        productIds: (formData.productIds || []).filter((id: string) => id !== '_selection_mode_active_'),
+        categoryIds: (formData.categoryIds || []).filter((id: string) => id !== '_selection_mode_active_')
       };
 
       const res = await fetch(url, {
@@ -65,7 +67,8 @@ export default function DiscountManager({ initialDiscounts, allProducts = [] }: 
       
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || "Unknown error occurred");
+        const fullMessage = data.details ? `${data.error}: ${data.details}` : data.error;
+        throw new Error(fullMessage || "Unknown error occurred on server");
       }
 
       const saved = await res.json();
@@ -76,7 +79,7 @@ export default function DiscountManager({ initialDiscounts, allProducts = [] }: 
         setDiscounts([saved, ...discounts]);
       }
       setIsModalOpen(false);
-      setFormData({});
+      setFormData({ productIds: [], categoryIds: [] });
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       alert(err.message);
@@ -86,8 +89,31 @@ export default function DiscountManager({ initialDiscounts, allProducts = [] }: 
   };
 
   const openNew = () => {
-    setFormData({ discountType: "PERCENTAGE", active: true, productIds: [] });
+    setFormData({ discountType: "PERCENTAGE", active: true, productIds: [], categoryIds: [] });
     setIsModalOpen(true);
+  };
+
+  const isScopeActive = (type: 'all' | 'products' | 'categories') => {
+     if (type === 'all') {
+       return (!formData.productIds || formData.productIds.length === 0) && (!formData.categoryIds || formData.categoryIds.length === 0);
+     }
+     if (type === 'products') {
+       return formData.productIds && formData.productIds.length > 0;
+     }
+     if (type === 'categories') {
+       return formData.categoryIds && formData.categoryIds.length > 0;
+     }
+     return false;
+  };
+
+  const setScope = (type: 'all' | 'products' | 'categories') => {
+     if (type === 'all') {
+       setFormData({...formData, productIds: [], categoryIds: []});
+     } else if (type === 'products') {
+       setFormData({...formData, productIds: ['_selection_mode_active_'], categoryIds: []});
+     } else if (type === 'categories') {
+       setFormData({...formData, categoryIds: ['_selection_mode_active_'], productIds: []});
+     }
   };
 
   return (
@@ -271,30 +297,31 @@ export default function DiscountManager({ initialDiscounts, allProducts = [] }: 
                         <div className="flex gap-2">
                            <button 
                              type="button"
-                             onClick={() => setFormData({...formData, productIds: []})}
-                             className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all ${(!formData.productIds || formData.productIds.length === 0) ? 'bg-amber-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                             onClick={() => setScope('all')}
+                             className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all ${isScopeActive('all') ? 'bg-amber-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                            >
                              All Products
                            </button>
                            <button 
                              type="button"
-                             onClick={() => {
-                               if (!formData.productIds || formData.productIds.length === 0) {
-                                 // Initialize with an empty array but mark as "active" mode
-                                 // We'll use a trick: if it's undefined or [], it's "All". 
-                                 // Let's use a hidden flag or just check if the user clicked it.
-                                 setFormData({...formData, productIds: ['_selection_mode_active_']});
-                               }
-                             }}
-                             className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all ${(formData.productIds && formData.productIds.length > 0) ? 'bg-emerald-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                             onClick={() => setScope('products')}
+                             className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all ${isScopeActive('products') ? 'bg-emerald-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
                            >
                              Specific Products ({(formData.productIds || []).filter((id: string) => id !== '_selection_mode_active_').length})
+                           </button>
+                           <button 
+                             type="button"
+                             onClick={() => setScope('categories')}
+                             className={`px-3 py-1 text-[10px] font-bold rounded-full transition-all ${isScopeActive('categories') ? 'bg-blue-600 text-white shadow-md' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+                           >
+                             Specific Categories ({(formData.categoryIds || []).filter((id: string) => id !== '_selection_mode_active_').length})
                            </button>
                         </div>
                      </div>
 
-                     {formData.productIds && formData.productIds.length > 0 && (
-                        <div className="bg-white p-5 rounded-2xl border border-dashed border-gray-200 animate-in fade-in slide-in-from-top-4 duration-500 shadow-inner">
+                     {/* Product Selection List */}
+                     {isScopeActive('products') && (
+                        <div className="bg-white p-5 rounded-2xl border border-dashed border-gray-200 animate-in fade-in slide-in-from-top-4 duration-500 shadow-inner overflow-hidden">
                            <div className="mb-5 relative">
                               <input 
                                 type="text" 
@@ -361,6 +388,72 @@ export default function DiscountManager({ initialDiscounts, allProducts = [] }: 
                            
                            {allProducts.filter(p => !searchQuery || p.title.toLowerCase().includes(searchQuery)).length === 0 && (
                              <div className="py-10 text-center text-gray-400 italic text-sm">No products found for this search.</div>
+                           )}
+                        </div>
+                     )}
+
+                     {/* Category Selection List */}
+                     {isScopeActive('categories') && (
+                        <div className="bg-white p-5 rounded-2xl border border-dashed border-gray-200 animate-in fade-in slide-in-from-top-4 duration-500 shadow-inner overflow-hidden">
+                           <div className="mb-5 relative">
+                              <input 
+                                type="text" 
+                                placeholder="Search categories by name..." 
+                                className="w-full bg-gray-50/80 border-none rounded-xl px-10 py-3 text-xs font-medium placeholder:text-gray-400 focus:ring-2 focus:ring-blue-500/20 transition-all"
+                                onChange={(e) => setCategorySearchQuery(e.target.value.toLowerCase())}
+                              />
+                              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                              </div>
+                           </div>
+
+                           <div className="grid grid-cols-1 gap-2 max-h-72 overflow-y-auto custom-scrollbar pr-2">
+                              {allCategories
+                                .filter(c => !categorySearchQuery || c.name.toLowerCase().includes(categorySearchQuery))
+                                .map(category => {
+                                  const isChecked = formData.categoryIds?.includes(category.id);
+                                  return (
+                                    <label 
+                                      key={category.id} 
+                                      className={`group flex items-center gap-4 p-4 rounded-xl cursor-pointer transition-all border ${isChecked ? 'bg-blue-50/50 border-blue-500 shadow-sm' : 'bg-white border-gray-100 hover:border-blue-200 hover:bg-blue-50/10'}`}
+                                    >
+                                       <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0 group-hover:bg-blue-100 transition-colors">
+                                          <Users className="w-5 h-5 text-blue-500" />
+                                       </div>
+                                       
+                                       <div className="flex-1 min-w-0">
+                                          <p className={`text-[13px] font-bold truncate ${isChecked ? 'text-blue-900' : 'text-gray-700'}`}>
+                                            {category.name}
+                                          </p>
+                                          <p className="text-[10px] text-gray-400 mt-0.5 uppercase tracking-widest">{category.slug}</p>
+                                       </div>
+
+                                       <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-all ${isChecked ? 'bg-blue-500 text-white' : 'bg-gray-100 text-transparent group-hover:bg-blue-100'}`}>
+                                          <CheckCircle className="w-4 h-4" />
+                                       </div>
+
+                                       <input 
+                                         type="checkbox" 
+                                         className="hidden"
+                                         checked={isChecked}
+                                         onChange={(e) => {
+                                           let newIds = (formData.categoryIds || []).filter((id: string) => id !== '_selection_mode_active_');
+                                           if (e.target.checked) {
+                                             newIds = [...newIds, category.id];
+                                           } else {
+                                             newIds = newIds.filter((id: string) => id !== category.id);
+                                           }
+                                           if (newIds.length === 0) newIds = ['_selection_mode_active_'];
+                                           setFormData({...formData, categoryIds: newIds});
+                                         }}
+                                       />
+                                    </label>
+                                  );
+                                })}
+                           </div>
+                           
+                           {allCategories.filter(c => !categorySearchQuery || c.name.toLowerCase().includes(categorySearchQuery)).length === 0 && (
+                             <div className="py-10 text-center text-gray-400 italic text-sm">No categories found for this search.</div>
                            )}
                         </div>
                      )}
