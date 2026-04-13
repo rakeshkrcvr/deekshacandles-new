@@ -42,6 +42,8 @@ export default function ProductTable({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isPending, startTransition] = useTransition();
+  const [batchCategoryIds, setBatchCategoryIds] = useState<string[]>([]);
+  const [isCategoryMenuOpen, setIsCategoryMenuOpen] = useState(false);
   
   // Modal states
   const [deleteModal, setDeleteModal] = useState<{ isOpen: boolean; id: string | null; batch: boolean }>({
@@ -140,15 +142,17 @@ export default function ProductTable({
     }
   };
 
-  const handleBatchUpdateCategory = async (categoryId: string | null) => {
+  const handleBatchUpdateCategory = async (ids: string[]) => {
     const updates = selectedIds.map(id => ({ 
         id, 
-        categoryIds: categoryId ? [categoryId] : [] 
+        categoryIds: ids
     }));
     startTransition(async () => {
         const result = await updateProductsBatch(updates);
         if (result.success) {
           setSelectedIds([]);
+          setBatchCategoryIds([]);
+          setIsCategoryMenuOpen(false);
           router.refresh();
         }
     });
@@ -457,27 +461,56 @@ export default function ProductTable({
               </button>
 
               <div className="relative group">
-                <button className="flex items-center gap-2 text-sm font-medium text-gray-300 hover:text-white transition-colors">
-                  Change Category 
-                  <ChevronDown className="w-4 h-4" />
+                <button 
+                  onClick={() => setIsCategoryMenuOpen(!isCategoryMenuOpen)}
+                  className={`flex items-center gap-2 text-sm font-medium transition-colors ${isCategoryMenuOpen ? 'text-white' : 'text-gray-300 hover:text-white'}`}
+                >
+                  Change Categories
+                  <ChevronDown className={`w-4 h-4 transition-transform ${isCategoryMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
-                <div className="absolute bottom-full mb-4 right-0 bg-white text-gray-900 rounded-2xl shadow-2xl py-2 min-w-[200px] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all translate-y-2 group-hover:translate-y-0">
-                  <button 
-                    onClick={() => handleBatchUpdateCategory(null)}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                  >
-                    Uncategorized
-                  </button>
-                  {categories.map(c => (
-                    <button 
-                      key={c.id}
-                      onClick={() => handleBatchUpdateCategory(c.id)}
-                      className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
-                    >
-                      {c.name}
-                    </button>
-                  ))}
-                </div>
+                
+                {isCategoryMenuOpen && (
+                  <div className="absolute bottom-full mb-4 right-0 bg-white text-gray-900 rounded-2xl shadow-2xl py-4 min-w-[240px] border border-gray-100 animate-in slide-in-from-bottom-2 duration-300">
+                    <div className="px-4 pb-2 mb-2 border-b border-gray-50">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Select target categories</p>
+                    </div>
+                    
+                    <div className="max-h-60 overflow-y-auto custom-scrollbar px-2 space-y-1">
+                      <button 
+                        onClick={() => setBatchCategoryIds([])}
+                        className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors flex items-center justify-between ${batchCategoryIds.length === 0 ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-gray-50'}`}
+                      >
+                        Uncategorized
+                        {batchCategoryIds.length === 0 && <Check className="w-3.5 h-3.5" />}
+                      </button>
+                      
+                      {categories.map(c => {
+                        const isSelected = batchCategoryIds.includes(c.id);
+                        return (
+                          <button 
+                            key={c.id}
+                            onClick={() => {
+                              setBatchCategoryIds(prev => isSelected ? prev.filter(id => id !== c.id) : [...prev, c.id]);
+                            }}
+                            className={`w-full text-left px-3 py-2 text-xs rounded-lg transition-colors flex items-center justify-between ${isSelected ? 'bg-blue-50 text-blue-600 font-bold' : 'hover:bg-gray-50'}`}
+                          >
+                            <span className="truncate">{c.name}</span>
+                            {isSelected && <Check className="w-3.5 h-3.5" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    
+                    <div className="mt-4 px-4 pt-4 border-t border-gray-50">
+                      <button 
+                        onClick={() => handleBatchUpdateCategory(batchCategoryIds)}
+                        className="w-full bg-blue-600 text-white rounded-xl py-2 text-xs font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 flex items-center justify-center gap-2"
+                      >
+                        Apply to {selectedIds.length} Products
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <button 
