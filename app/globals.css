@@ -26,7 +26,8 @@ body {
   border-radius: 2px !important;
 }
 
-b, strong {
+b,
+strong {
   font-weight: 500 !important;
 }
 
@@ -45,4 +46,8 @@ b, strong {
       color-mix(in oklab, var(--color-red-700) 90%, transparent);
     font-size: 12px;
   }
+}
+
+.py-24 {
+  padding-block: calc(var(--spacing) * 3);
 }
